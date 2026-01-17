@@ -1,5 +1,5 @@
 import "../../dashboard.css";
-import "../../App.css";
+import "../../app.css";
 import { useState } from "react";
 
 export default function ProviderEnrollments() {
