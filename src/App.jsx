@@ -19,6 +19,9 @@ import ProviderCohort from "./pages/provider/ProviderCohort.jsx";
 import CreateCohort from "./pages/provider/createCohort.jsx";
 import CohortList from "./pages/provider/cohortList.jsx";
 import Training from "./pages/trainings.jsx";
+import Learning from "./pages/Learning.jsx";
+import CourseLearning from "./pages/courseLearning.jsx";
+// import MyLearning from "./pages/My
 function App() {
   return (
     <Router>
@@ -35,15 +38,26 @@ function App() {
         <Route path="/provider/cohorts" element={<ProviderCohorts />} />
         <Route path="/provider/enrollments" element={<ProviderEnrollments />} />
         <Route path="/otp-verification" element={<OtpVerification />} />
+        <Route path="/learning" element={<Learning />} />
+        <Route path="/courseLearning" element={<CourseLearning />} />
         <Route
           path="/provider/verification"
           element={<ProviderVerification />}
         />
         <Route path="/provider/createCourse" element={<CreateCourse />} />
-        <Route path="/provider/viewCourse" element={<ProviderCourseView />} />
-        <Route path="/provider/cohort" element={<ProviderCohort />} />
-        <Route path="/provider/createCohort" element={<CreateCohort />} />
-        <Route path="/provider/cohortlist" element={<CohortList />} />
+        <Route
+          path="/provider/viewCourse/:id"
+          element={<ProviderCourseView />}
+        />{" "}
+        <Route
+          path="/provider/cohorts/:courseId"
+          element={<ProviderCohort />}
+        />
+        <Route
+          path="/provider/cohorts/create/:courseId"
+          element={<CreateCohort />}
+        />
+        <Route path="/provider/cohortlist/:courseId" element={<CohortList />} />{" "}
         <Route path="/trainings" element={<Training />} />
       </Routes>
     </Router>

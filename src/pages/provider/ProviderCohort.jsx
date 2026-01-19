@@ -1,55 +1,34 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import ProviderDashboardLayout from "./layouts/ProviderDashboardLayout";
 import DataTable from "react-data-table-component";
 import { FaEye, FaEdit, FaTrash, FaPlus } from "react-icons/fa";
-
-// Dummy Cohort Data
-const data = [
-  {
-    id: 1,
-    intakeName: "Feb 2026 Cohort",
-    courseName: "Advanced React",
-    startDate: "2026-02-01",
-    endDate: "2026-03-30",
-    schedule: "Mon – Fri | 6pm – 8pm",
-    mode: "Online",
-    venue: "",
-    onlineLink: "https://zoom.us/example",
-    capacity: 30,
-    enrolled: 12,
-    price: 450000,
-    registrationDeadline: "2026-01-25",
-    status: "Open",
-    description:
-      "This cohort focuses on advanced React development and real projects.",
-  },
-  {
-    id: 2,
-    intakeName: "Mar 2026 Cohort",
-    courseName: "Backend with Laravel",
-    startDate: "2026-03-05",
-    endDate: "2026-05-01",
-    schedule: "Sat – Sun | 9am – 1pm",
-    mode: "Physical",
-    venue: "GRVA Tech – Dar es Salaam",
-    capacity: 20,
-    enrolled: 20,
-    price: 600000,
-    registrationDeadline: "2026-02-25",
-    status: "Full",
-    description: "Hands-on backend training using Laravel and MySQL.",
-  },
-];
+import api from "../../api/axio";
 
 export default function ProviderCohorts() {
+  const navigate = useNavigate();
+  const { courseId } = useParams();
+
   const [filterText, setFilterText] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [selectedCohort, setSelectedCohort] = useState(null);
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    api
+      .get(`/courses/${courseId}/cohorts`)
+      .then((res) => {
+        setData(res.data || []);
+      })
+      .catch((err) => {
+        console.error("Failed to load cohorts:", err);
+      });
+  }, [courseId]);
 
   const filteredData = data.filter(
     (item) =>
-      item.intakeName.toLowerCase().includes(filterText.toLowerCase()) ||
-      item.courseName.toLowerCase().includes(filterText.toLowerCase())
+      item.intakeName?.toLowerCase().includes(filterText.toLowerCase()) ||
+      item.courseName?.toLowerCase().includes(filterText.toLowerCase()),
   );
 
   const handleView = (cohort) => {
@@ -58,15 +37,11 @@ export default function ProviderCohorts() {
   };
 
   const handleEdit = (cohort) => alert(`Edit cohort: ${cohort.intakeName}`);
+
   const handleDelete = (cohort) => {
     if (window.confirm(`Delete ${cohort.intakeName}?`)) {
       alert("Deleted");
     }
-  };
-
-  // New: Add Cohort
-  const handleAddCohort = () => {
-    alert("Redirect to Create Cohort page or open form");
   };
 
   const columns = [
@@ -111,12 +86,10 @@ export default function ProviderCohorts() {
   return (
     <ProviderDashboardLayout title="Cohorts">
       <div className="container mt-4">
-        {/* Header: title left, search + add cohort right */}
         <div className="d-flex justify-content-between mb-2">
           <h5>Cohorts List</h5>
 
           <div className="d-flex gap-2">
-            {/* Search box */}
             <input
               type="text"
               placeholder="Search..."
@@ -125,11 +98,9 @@ export default function ProviderCohorts() {
               value={filterText}
               onChange={(e) => setFilterText(e.target.value)}
             />
-
-            {/* Add Cohort button */}
             <button
+              onClick={() => navigate(`/provider/cohorts/create/${courseId}`)}
               className="btn btn-sm btn-success d-flex align-items-center gap-1 addCohortBtn"
-              onClick={handleAddCohort}
             >
               <FaPlus />
               Add Cohort
@@ -145,7 +116,6 @@ export default function ProviderCohorts() {
           striped
         />
 
-        {/* VIEW COHORT MODAL */}
         {showModal && selectedCohort && (
           <div
             className="modal fade show d-block"
@@ -175,6 +145,7 @@ export default function ProviderCohorts() {
                   <p>
                     <strong>Mode:</strong> {selectedCohort.mode}
                   </p>
+
                   {selectedCohort.mode === "Physical" && (
                     <p>
                       <strong>Venue:</strong> {selectedCohort.venue}
@@ -192,6 +163,7 @@ export default function ProviderCohorts() {
                       </a>
                     </p>
                   )}
+
                   <hr />
                   <p>
                     <strong>Seats:</strong> {selectedCohort.capacity}
@@ -202,7 +174,7 @@ export default function ProviderCohorts() {
                   </p>
                   <p>
                     <strong>Price:</strong> TZS{" "}
-                    {selectedCohort.price.toLocaleString()}
+                    {selectedCohort.price?.toLocaleString()}
                   </p>
                   <p>
                     <strong>Registration Deadline:</strong>{" "}

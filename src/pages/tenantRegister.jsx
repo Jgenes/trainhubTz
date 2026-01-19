@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/bootstrap.css";
 import "react-toastify/dist/ReactToastify.css";
-
+import axios from "axios";
 import {
   FaUser,
   FaEnvelope,
@@ -53,6 +53,8 @@ function RegisterTenant() {
 
     try {
       // ✅ POST to tenant-register route
+      await axios.get(" http://127.0.0.1:8000/sanctum/csrf-cookie");
+
       const response = await api.post("/tenant-register", {
         name: fullname,
         email,
@@ -63,7 +65,7 @@ function RegisterTenant() {
 
       toast.success(
         response.data.message ||
-          "Tenant registered successfully! Check your email to activate your account."
+          "Tenant registered successfully! Check your email to activate your account.",
       );
 
       // Redirect to login after 2 seconds
@@ -195,6 +197,15 @@ function RegisterTenant() {
                     {loading ? "Creating account..." : "Create Account"}
                   </button>
                 </form>
+                <div className="mt-4">
+                  <a href="/login">
+                    <center>
+                      <p style={{ fontSize: "13px", color: "#111827" }}>
+                        Have an account login here...
+                      </p>
+                    </center>
+                  </a>
+                </div>
               </div>
             </div>
           </div>

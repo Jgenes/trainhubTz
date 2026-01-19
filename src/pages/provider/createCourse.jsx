@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ProviderDashboardLayout from "./layouts/ProviderDashboardLayout";
-import api from "../../api/axio"; // Double-check this path and filename (axios.js vs axio.js)
-import axios from "axios";
+import api from "../../api/axio"; // Inatumia interceptor kupitisha Bearer Token
+
 export default function CreateCourse() {
   const navigate = useNavigate();
 
@@ -64,8 +64,10 @@ export default function CreateCourse() {
     setError("");
 
     try {
-      // 1. Prepare Multipart Form Data
+      // 1. Prepare FormData kwa ajili ya Multipart (FileUpload + JSON)
       const formData = new FormData();
+
+      // Text fields
       formData.append("title", course.title);
       formData.append("category", course.category);
       formData.append("mode", course.mode);
@@ -73,43 +75,40 @@ export default function CreateCourse() {
       formData.append("longDescription", course.longDescription);
       formData.append("status", course.status);
 
-      // JSON strings for arrays/objects
+      // Arrays/Objects zinatumwa kama JSON strings (Laravel itazi-decode)
       formData.append(
         "learningOutcomes",
-        JSON.stringify(course.learningOutcomes)
+        JSON.stringify(course.learningOutcomes),
       );
       formData.append("skills", JSON.stringify(course.skills));
       formData.append("requirements", JSON.stringify(course.requirements));
       formData.append("contents", JSON.stringify(course.contents));
 
+      // Banner File
       if (course.banner) {
         formData.append("banner", course.banner);
       }
 
-      // 2. Fetch the CSRF Cookie
-      // NOTE: We go up one level '../' because api instance baseURL usually ends in /api
-      // Sanctum's route is at the root: http://127.0.0.1:8000/sanctum/csrf-cookie
-      await axios.get("http://localhost:8000/sanctum/csrf-cookie", {
-        withCredentials: true,
-      });
-      // 3. Send the POST request
-      // We REMOVED the "Authorization" header. Sanctum uses the cookie set in step 2.
+      // 2. Tuma POST request kwa kutumia 'api' instance
+      // Kumbuka: Token inaongezwa automatically na axios interceptor yako
       const response = await api.post("/courses", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
 
-      const createdCourse = response.data.course;
+      // Laravel inarudisha { message: '...', course: { id: ... } }
+      const createdCourseId = response.data.course.id;
 
-      navigate(`/provider/cohorts/${createdCourse.id}`, {
+      navigate(`/provider/cohorts/${createdCourseId}`, {
         state: { message: "Course created! Please add at least one cohort." },
       });
     } catch (err) {
       console.error("Submission Error:", err);
-      setError(
-        err.response?.data?.message || "Failed to create course. Try again!"
-      );
+      // Kama kuna validation errors kutoka Laravel (e.g. status 422)
+      const msg =
+        err.response?.data?.message || "Failed to create course. Try again!";
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -119,7 +118,7 @@ export default function CreateCourse() {
     <ProviderDashboardLayout title="Create Course">
       <div className="container mt-4">
         <button
-          className="btn btn-sm btn-outline-secondary mb-3 btnB"
+          className="btn btn-sm btn-outline-secondary mb-3"
           onClick={() => navigate(-1)}
         >
           ← Back
@@ -127,44 +126,44 @@ export default function CreateCourse() {
 
         {error && <div className="alert alert-danger">{error}</div>}
 
-        <form onSubmit={handleSubmit}>
-          <h3 className="h4A mb-3">Course Information</h3>
+        <form onSubmit={handleSubmit} className="pb-5">
+          <h3 className="mb-3 h4">Course Information</h3>
 
-          <div className="mb-3">
-            <label className="form-label">Course Title</label>
-            <input
-              type="text"
-              className="form-control"
-              name="title"
-              value={course.title}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label">Category</label>
-            <input
-              type="text"
-              className="form-control"
-              name="category"
-              value={course.category}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label">Mode</label>
-            <select
-              className="form-select"
-              name="mode"
-              value={course.mode}
-              onChange={handleChange}
-            >
-              <option>Online</option>
-              <option>Physical</option>
-              <option>Hybrid</option>
-            </select>
+          <div className="row">
+            <div className="col-md-6 mb-3">
+              <label className="form-label">Course Title</label>
+              <input
+                type="text"
+                className="form-control"
+                name="title"
+                value={course.title}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="col-md-3 mb-3">
+              <label className="form-label">Category</label>
+              <input
+                type="text"
+                className="form-control"
+                name="category"
+                value={course.category}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="col-md-3 mb-3">
+              <label className="form-label">Mode</label>
+              <select
+                className="form-select"
+                name="mode"
+                value={course.mode}
+                onChange={handleChange}
+              >
+                <option value="Online">Online</option>
+                <option value="Physical">Physical</option>
+                <option value="Hybrid">Hybrid</option>
+              </select>
+            </div>
           </div>
 
           <div className="mb-3">
@@ -189,7 +188,7 @@ export default function CreateCourse() {
           </div>
 
           <hr />
-          <h3 className="h4A">What You'll Learn</h3>
+          <h3 className="h5">What You'll Learn</h3>
           {course.learningOutcomes.map((item, idx) => (
             <input
               key={idx}
@@ -199,63 +198,71 @@ export default function CreateCourse() {
               onChange={(e) =>
                 handleArrayChange("learningOutcomes", idx, e.target.value)
               }
+              placeholder="e.g. Master React Hooks"
             />
           ))}
           <button
             type="button"
-            className="btn btn-sm btn-outline-primary mb-3 btnB"
+            className="btn btn-sm btn-link p-0 mb-3"
             onClick={() => addArrayItem("learningOutcomes")}
           >
             + Add Outcome
           </button>
 
           <hr />
-          <h3 className="h4A">Skills You'll Gain</h3>
-          {course.skills.map((skill, idx) => (
-            <input
-              key={idx}
-              type="text"
-              className="form-control mb-2"
-              value={skill}
-              onChange={(e) => handleArrayChange("skills", idx, e.target.value)}
-            />
-          ))}
-          <button
-            type="button"
-            className="btn btn-sm btn-outline-primary mb-3 btnB"
-            onClick={() => addArrayItem("skills")}
-          >
-            + Add Skill
-          </button>
+          <h3 className="h5">Skills & Requirements</h3>
+          <div className="row">
+            <div className="col-md-6">
+              <label className="small fw-bold">Skills Gained</label>
+              {course.skills.map((skill, idx) => (
+                <input
+                  key={idx}
+                  type="text"
+                  className="form-control mb-2"
+                  value={skill}
+                  onChange={(e) =>
+                    handleArrayChange("skills", idx, e.target.value)
+                  }
+                />
+              ))}
+              <button
+                type="button"
+                className="btn btn-sm btn-link p-0 mb-3"
+                onClick={() => addArrayItem("skills")}
+              >
+                + Add Skill
+              </button>
+            </div>
+            <div className="col-md-6">
+              <label className="small fw-bold">Requirements</label>
+              {course.requirements.map((req, idx) => (
+                <input
+                  key={idx}
+                  type="text"
+                  className="form-control mb-2"
+                  value={req}
+                  onChange={(e) =>
+                    handleArrayChange("requirements", idx, e.target.value)
+                  }
+                />
+              ))}
+              <button
+                type="button"
+                className="btn btn-sm btn-link p-0 mb-3"
+                onClick={() => addArrayItem("requirements")}
+              >
+                + Add Requirement
+              </button>
+            </div>
+          </div>
 
           <hr />
-          <h3 className="h4A">Requirements</h3>
-          {course.requirements.map((req, idx) => (
-            <input
-              key={idx}
-              type="text"
-              className="form-control mb-2"
-              value={req}
-              onChange={(e) =>
-                handleArrayChange("requirements", idx, e.target.value)
-              }
-            />
-          ))}
-          <button
-            type="button"
-            className="btn btn-sm btn-outline-primary mb-3 btnB"
-            onClick={() => addArrayItem("requirements")}
-          >
-            + Add Requirement
-          </button>
-
-          <hr />
-          <h3 className="h4A">Course Contents</h3>
+          <h3 className="h5">Course Contents</h3>
           {course.contents.map((content, idx) => (
-            <div key={idx} className="border rounded p-3 mb-3">
+            <div key={idx} className="border rounded p-3 mb-3 bg-light">
               <input
                 type="text"
-                placeholder="Content Title"
+                placeholder="Section Title"
                 className="form-control mb-2"
                 value={content.title}
                 onChange={(e) =>
@@ -273,7 +280,7 @@ export default function CreateCourse() {
               {course.mode === "Online" && (
                 <input
                   type="text"
-                  placeholder="Video Link (optional)"
+                  placeholder="Video URL"
                   className="form-control"
                   value={content.link}
                   onChange={(e) =>
@@ -285,50 +292,54 @@ export default function CreateCourse() {
           ))}
           <button
             type="button"
-            className="btn btn-sm btn-outline-primary mb-4 btnB"
+            className="btn btn-sm btn-outline-primary mb-4"
             onClick={addContent}
           >
             + Add Content Section
           </button>
 
           <hr />
-          <h3 className="h4A">Banner Image</h3>
-          <div className="mb-3">
-            <input
-              type="file"
-              accept="image/*"
-              className="form-control"
-              onChange={handleBannerUpload}
-            />
-            {course.banner && (
-              <small className="text-muted mt-1 d-block">
-                Selected: {course.banner.name}
-              </small>
-            )}
+          <div className="row align-items-end">
+            <div className="col-md-6">
+              <h3 className="h5">Banner Image</h3>
+              <input
+                type="file"
+                accept="image/*"
+                className="form-control"
+                onChange={handleBannerUpload}
+              />
+            </div>
+            <div className="col-md-6">
+              <label className="form-label fw-bold">Publishing Status</label>
+              <select
+                className="form-select"
+                name="status"
+                value={course.status}
+                onChange={handleChange}
+              >
+                <option value="Draft">Draft</option>
+                <option value="Published">Published</option>
+                <option value="Closed">Closed</option>
+              </select>
+            </div>
           </div>
 
-          <hr />
-          <div className="mb-4">
-            <label className="form-label">Course Status</label>
-            <select
-              className="form-select"
-              name="status"
-              value={course.status}
-              onChange={handleChange}
+          <div className="mt-5 border-top pt-4">
+            <button
+              type="submit"
+              className="btn btn-primary btn-lg px-5 shadow-sm"
+              disabled={loading}
             >
-              <option>Draft</option>
-              <option>Published</option>
-              <option>Closed</option>
-            </select>
+              {loading ? (
+                <span>
+                  <span className="spinner-border spinner-border-sm me-2"></span>
+                  Saving Course...
+                </span>
+              ) : (
+                "Create Course"
+              )}
+            </button>
           </div>
-
-          <button
-            type="submit"
-            className="btn btn-primary btnB"
-            disabled={loading}
-          >
-            {loading ? "Saving..." : "Save Course"}
-          </button>
         </form>
       </div>
     </ProviderDashboardLayout>

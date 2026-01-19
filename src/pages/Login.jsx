@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import api from "../api/axio";
 import "react-toastify/dist/ReactToastify.css";
-import axios from "axios";
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 
 import NavBar from "../components/NavBar";
@@ -26,10 +25,8 @@ function Login() {
     setLoading(true);
 
     try {
-      // ✅ Correct endpoint
-      // await axios.get("http://localhost:8000/sanctum/csrf-cookie", {
-      //   withCredentials: true,
-      // });
+      // await api.get("/sanctum/csrf-cookie");
+
       const response = await api.post("/login", { email, password });
 
       const data = response.data;
@@ -115,7 +112,7 @@ function Login() {
                     {loading ? "Sending OTP..." : "Login"}
                   </button>
                   <div className="mt-4">
-                    <a href="">
+                    <a href="/register">
                       <center>
                         <p style={{ fontSize: "13px", color: "#111827" }}>
                           Don't have an account register here...

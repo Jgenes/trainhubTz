@@ -9,7 +9,8 @@ import CategoryChips from "../components/CategoryChips";
 import PromoCards from "../components/PromoCards";
 import Footer from "../components/Footer";
 import HeroBanner from "../components/HeroBanner";
-import "../App.css";
+import TrendingCourses from "../components/TrendingCourses";
+import "../app.css";
 
 export default function Home() {
   return (
@@ -31,8 +32,17 @@ export default function Home() {
       <div className="container c1">
         <div className="row justify-content-center">
           <div className="col-md-4">
-            <div className="card card2">
-              <h5>Get in-demand skills</h5>
+            <div
+              className="card card2"
+              style={{
+                backgroundImage:
+                  "url('https://images.unsplash.com/photo-1596495577886-d920f1fb0f12?auto=format&fit=crop&w=200&q=80')",
+                backgroundRepeat: "no-repeat",
+                backgroundPosition: "right center",
+                backgroundSize: "50px 50px",
+              }}
+            >
+              <h5 style={{ fontSize: "16px" }}>Get in-demand skills</h5>
               <img
                 src={Career}
                 alt="Career"
@@ -41,9 +51,10 @@ export default function Home() {
               />
             </div>
           </div>
+
           <div className="col-md-4">
             <div className="card card2">
-              <h5>Launch a new carrer</h5>
+              <h5 style={{ fontSize: "16px" }}>Launch a new career</h5>
               <img
                 src={Skills}
                 alt="Career"
@@ -52,9 +63,10 @@ export default function Home() {
               />
             </div>
           </div>
+
           <div className="col-md-4">
             <div className="card card2">
-              <h5>Earn a certificate</h5>
+              <h5 style={{ fontSize: "16px" }}>Earn a certificate</h5>
               <img
                 src={GraduationCap}
                 alt="Career"
@@ -65,9 +77,12 @@ export default function Home() {
           </div>
         </div>
       </div>
+
       <HeroBanner />
       <CardSlider />
-
+      <div className="container container2">
+        <TrendingCourses />
+      </div>
       <NewReleaseCourses />
       <div className="container container2">
         <h3 className="mb-3">Categories</h3>

@@ -1,37 +1,36 @@
 import { useEffect, useState } from "react";
-import api from "../../../api/axio";
 import "../../../dashboard.css";
 import "../../../app.css";
 
 export default function ProviderDashboardLayout({ title, children }) {
   const [user, setUser] = useState(null);
 
-  // ✅ LOGOUT FUNCTION (WAS MISSING)
+  // ✅ LOGOUT FUNCTION
   const logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     window.location.href = "/login";
   };
 
-  // ✅ FETCH LOGGED-IN USER
+  // ✅ CHUKUA DATA KUTOKA LOCALSTORAGE (BILA KUTUMIA API ROUTE)
   useEffect(() => {
     const token = localStorage.getItem("token");
+    const savedUser = localStorage.getItem("user");
 
-    if (!token) {
+    // Kama hana token au data ya user, mrudishe login moja kwa moja
+    if (!token || !savedUser) {
       window.location.href = "/login";
       return;
     }
 
-    api
-      .get("/me")
-      .then((res) => {
-        setUser(res.data.user);
-      })
-      .catch((err) => {
-        if (err.response?.status === 401) {
-          localStorage.removeItem("token");
-          window.location.href = "/login";
-        }
-      });
+    try {
+      // Badilisha data kutoka string kwenda Object ya Javascript
+      const userData = JSON.parse(savedUser);
+      setUser(userData);
+    } catch (error) {
+      console.error("Imeshindwa kusoma data za user", error);
+      logout();
+    }
   }, []);
 
   return (
@@ -60,12 +59,13 @@ export default function ProviderDashboardLayout({ title, children }) {
           placeholder="Search"
         />
 
-        {/* USER INFO */}
+        {/* USER INFO SECTION */}
         <div className="navbar-nav">
           <div className="nav-item d-flex align-items-center gap-3 px-3 text-white">
-            <span className="small" style={{ color: "#111827" }}>
+            {/* Hapa ndipo jina lako linatokea kutoka kwenye LocalStorage */}
+            <span className="small text-white" style={{ color: "#111827" }}>
               <i className="bi bi-person-circle me-1"></i>
-              {user ? user.name : "Loading..."}
+              {user ? user.name : "Mgeni"}
             </span>
 
             <button
@@ -185,6 +185,7 @@ export default function ProviderDashboardLayout({ title, children }) {
               <h1 className="h2 h2i">{title}</h1>
             </div>
 
+            {/* Hapa ndipo page content yako inatokea */}
             {children}
           </main>
         </div>

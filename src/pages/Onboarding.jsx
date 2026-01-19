@@ -103,7 +103,7 @@ function ProviderOnboardingFull() {
     try {
       const res = await api.post("/provider/onboarding", form);
       toast.success(res.data.message || "Onboarding submitted successfully!");
-      navigate("/provider/wait-verification");
+      navigate("/provider/verification");
     } catch (err) {
       toast.error(err.response?.data?.message || "Submission failed");
     } finally {

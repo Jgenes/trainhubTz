@@ -11,8 +11,9 @@ export default function Training() {
       title: "React for Beginners",
       category: "Web Development",
       provider: "John Doe",
-      providerLogo: "https://via.placeholder.com/30",
-      img: "https://via.placeholder.com/300x150",
+      providerLogo:
+        "https://ui-avatars.com/api/?name=John+Doe&background=0D6EFD&color=fff",
+      img: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?auto=format&fit=crop&w=800&q=80",
       startDate: "2026-02-01",
       remainingSeats: 5,
       mode: "Online",
@@ -22,8 +23,9 @@ export default function Training() {
       title: "Advanced Python",
       category: "Programming",
       provider: "Jane Smith",
-      providerLogo: "https://via.placeholder.com/30",
-      img: "https://via.placeholder.com/300x150",
+      providerLogo:
+        "https://ui-avatars.com/api/?name=Jane+Smith&background=198754&color=fff",
+      img: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80",
       startDate: "2026-02-05",
       remainingSeats: 0,
       mode: "Offline",
@@ -33,8 +35,9 @@ export default function Training() {
       title: "Cybersecurity Basics",
       category: "Security",
       provider: "Alice Johnson",
-      providerLogo: "https://via.placeholder.com/30",
-      img: "https://via.placeholder.com/300x150",
+      providerLogo:
+        "https://ui-avatars.com/api/?name=Alice+Johnson&background=DC3545&color=fff",
+      img: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=800&q=80",
       startDate: "2026-02-10",
       remainingSeats: 10,
       mode: "Online",
@@ -44,8 +47,9 @@ export default function Training() {
       title: "Data Science 101",
       category: "Data Science",
       provider: "Bob Lee",
-      providerLogo: "https://via.placeholder.com/30",
-      img: "https://via.placeholder.com/300x150",
+      providerLogo:
+        "https://ui-avatars.com/api/?name=Bob+Lee&background=6F42C1&color=fff",
+      img: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80",
       startDate: "2026-02-15",
       remainingSeats: 3,
       mode: "Online",
@@ -55,11 +59,74 @@ export default function Training() {
       title: "UI/UX Design Masterclass",
       category: "Design",
       provider: "Clara Evans",
-      providerLogo: "https://via.placeholder.com/30",
-      img: "https://via.placeholder.com/300x150",
+      providerLogo:
+        "https://ui-avatars.com/api/?name=Clara+Evans&background=FD7E14&color=fff",
+      img: "https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?auto=format&fit=crop&w=800&q=80",
       startDate: "2026-02-20",
       remainingSeats: 2,
       mode: "Offline",
+      enrollmentOpen: true,
+    },
+
+    // 🔥 NEW COURSES
+    {
+      title: "Node.js & Express API",
+      category: "Backend Development",
+      provider: "Michael Brown",
+      providerLogo:
+        "https://ui-avatars.com/api/?name=Michael+Brown&background=20C997&color=fff",
+      img: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80",
+      startDate: "2026-03-01",
+      remainingSeats: 8,
+      mode: "Online",
+      enrollmentOpen: true,
+    },
+    {
+      title: "Fullstack Web Development",
+      category: "Web Development",
+      provider: "Sarah Wilson",
+      providerLogo:
+        "https://ui-avatars.com/api/?name=Sarah+Wilson&background=0B5ED7&color=fff",
+      img: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=800&q=80",
+      startDate: "2026-03-05",
+      remainingSeats: 6,
+      mode: "Online",
+      enrollmentOpen: true,
+    },
+    {
+      title: "Mobile App Development (React Native)",
+      category: "Mobile Development",
+      provider: "Daniel Kim",
+      providerLogo:
+        "https://ui-avatars.com/api/?name=Daniel+Kim&background=6610F2&color=fff",
+      img: "https://images.unsplash.com/photo-1526498460520-4c246339dccb?auto=format&fit=crop&w=800&q=80",
+      startDate: "2026-03-10",
+      remainingSeats: 4,
+      mode: "Online",
+      enrollmentOpen: true,
+    },
+    {
+      title: "DevOps Fundamentals",
+      category: "DevOps",
+      provider: "Peter Adams",
+      providerLogo:
+        "https://ui-avatars.com/api/?name=Peter+Adams&background=198754&color=fff",
+      img: "https://images.unsplash.com/photo-1605902711622-cfb43c4437d1?auto=format&fit=crop&w=800&q=80",
+      startDate: "2026-03-15",
+      remainingSeats: 7,
+      mode: "Offline",
+      enrollmentOpen: true,
+    },
+    {
+      title: "Digital Marketing Bootcamp",
+      category: "Marketing",
+      provider: "Emily Carter",
+      providerLogo:
+        "https://ui-avatars.com/api/?name=Emily+Carter&background=DC3545&color=fff",
+      img: "https://images.unsplash.com/photo-1557838923-2985c318be48?auto=format&fit=crop&w=800&q=80",
+      startDate: "2026-03-20",
+      remainingSeats: 12,
+      mode: "Online",
       enrollmentOpen: true,
     },
   ];
@@ -95,7 +162,7 @@ export default function Training() {
           {/* FILTER PANEL */}
           <div className="col-md-3 mb-4">
             <div
-              className="card p-3 shadow-sm"
+              className="card p-3 shadow-sm card6"
               style={{ position: "sticky", top: "80px" }}
             >
               <h5 className="mb-3 hFilter">Filter Courses</h5>
@@ -103,7 +170,7 @@ export default function Training() {
               <div className="mb-3">
                 <label className="form-label">Name</label>
                 <select
-                  className="form-select"
+                  className="form-select small-select"
                   value={filters.name}
                   onChange={(e) =>
                     setFilters({ ...filters, name: e.target.value })
@@ -121,9 +188,9 @@ export default function Training() {
               </div>
 
               <div className="mb-3">
-                <label className="form-label">Category</label>
+                <label className="form-label small-select">Category</label>
                 <select
-                  className="form-select"
+                  className="form-select small-select"
                   value={filters.category}
                   onChange={(e) =>
                     setFilters({ ...filters, category: e.target.value })
@@ -141,7 +208,7 @@ export default function Training() {
               <div className="mb-3">
                 <label className="form-label">Trainer</label>
                 <select
-                  className="form-select"
+                  className="form-select small-select"
                   value={filters.trainer}
                   onChange={(e) =>
                     setFilters({ ...filters, trainer: e.target.value })
@@ -157,10 +224,10 @@ export default function Training() {
               </div>
 
               <div className="mb-3">
-                <label className="form-label">Start Date</label>
+                <label className="form-label ">Start Date</label>
                 <input
                   type="date"
-                  className="form-control"
+                  className="form-control small-select"
                   value={filters.date}
                   onChange={(e) =>
                     setFilters({ ...filters, date: e.target.value })
@@ -169,7 +236,7 @@ export default function Training() {
               </div>
 
               <button
-                className="btn btn-secondary w-100"
+                className="btn btn-secondary w-100 resetFilter"
                 onClick={() =>
                   setFilters({ name: "", category: "", trainer: "", date: "" })
                 }
@@ -226,16 +293,18 @@ export default function Training() {
                       </p>
 
                       {course.enrollmentOpen ? (
-                        <button
-                          style={{
-                            backgroundColor: "#0a2e67",
-                            borderColor: "#0a2e67",
-                            fontSize: "12px",
-                          }}
-                          className="btn btn-primary mt-auto"
-                        >
-                          Enroll Now
-                        </button>
+                        <a href="/course">
+                          <button
+                            style={{
+                              backgroundColor: "#0a2e67",
+                              borderColor: "#0a2e67",
+                              fontSize: "12px",
+                            }}
+                            className="btn btn-primary mt-auto"
+                          >
+                            Enroll Now
+                          </button>
+                        </a>
                       ) : (
                         <span className="badge bg-danger mt-auto">
                           End of Enrollment

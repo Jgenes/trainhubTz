@@ -1,12 +1,14 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import ProviderDashboardLayout from "./layouts/ProviderDashboardLayout";
+import api from "../../api/axio";
 
 export default function CreateCohort() {
   const navigate = useNavigate();
+  const { courseId } = useParams(); // ← GET COURSE ID
+
   const [cohort, setCohort] = useState({
     intakeName: "",
-    courseName: "",
     startDate: "",
     endDate: "",
     schedule: "",
@@ -25,11 +27,38 @@ export default function CreateCohort() {
     setCohort({ ...cohort, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Cohort Data Submitted:", cohort);
-    alert("Cohort created successfully!");
-    navigate(-1); // Go back to cohorts list after creation
+
+    try {
+      const payload = {
+        intake_name: cohort.intakeName,
+        start_date: cohort.startDate,
+        end_date: cohort.endDate,
+        schedule_text: cohort.schedule,
+        mode: cohort.mode,
+        venue: cohort.venue,
+        online_link: cohort.onlineLink,
+        capacity: parseInt(cohort.capacity) || 0,
+        price: parseFloat(cohort.price) || 0,
+        registration_deadline: cohort.registrationDeadline,
+        status: cohort.status.toUpperCase(),
+        description: cohort.description,
+      };
+
+      console.log("Sending payload:", payload); // Debug log
+      console.log("Course ID:", courseId); // Debug log
+
+      // await api.post(`/courses/${courseId}/cohorts`, payload);
+      await api.post(`/courses/${courseId}/cohorts`, payload);
+
+      alert("Cohort created successfully!");
+
+      navigate(`/provider/courses/${courseId}/cohorts`); // Redirect to cohort list
+    } catch (err) {
+      console.error("Submit Error:", err.response?.data || err);
+      alert("Failed to create cohort!");
+    }
   };
 
   return (
@@ -45,6 +74,7 @@ export default function CreateCohort() {
         <div className="card p-4 shadow-sm">
           <h5 className="mb-4">Add New Cohort</h5>
           <form onSubmit={handleSubmit}>
+            {/* Intake Name */}
             <div className="mb-3">
               <label className="form-label">Intake Name</label>
               <input
@@ -57,18 +87,7 @@ export default function CreateCohort() {
               />
             </div>
 
-            <div className="mb-3">
-              <label className="form-label">Course Name</label>
-              <input
-                type="text"
-                className="form-control"
-                name="courseName"
-                value={cohort.courseName}
-                onChange={handleChange}
-                required
-              />
-            </div>
-
+            {/* Dates */}
             <div className="row mb-3">
               <div className="col">
                 <label className="form-label">Start Date</label>
@@ -94,6 +113,7 @@ export default function CreateCohort() {
               </div>
             </div>
 
+            {/* Schedule */}
             <div className="mb-3">
               <label className="form-label">Schedule</label>
               <input
@@ -107,6 +127,7 @@ export default function CreateCohort() {
               />
             </div>
 
+            {/* Mode */}
             <div className="mb-3">
               <label className="form-label">Mode</label>
               <select
@@ -149,6 +170,7 @@ export default function CreateCohort() {
               </div>
             )}
 
+            {/* Capacity & Price */}
             <div className="row mb-3">
               <div className="col">
                 <label className="form-label">Capacity (Seats)</label>
@@ -174,6 +196,7 @@ export default function CreateCohort() {
               </div>
             </div>
 
+            {/* Deadline */}
             <div className="mb-3">
               <label className="form-label">Registration Deadline</label>
               <input
@@ -186,6 +209,7 @@ export default function CreateCohort() {
               />
             </div>
 
+            {/* Status */}
             <div className="mb-3">
               <label className="form-label">Status</label>
               <select
@@ -200,6 +224,7 @@ export default function CreateCohort() {
               </select>
             </div>
 
+            {/* Description */}
             <div className="mb-3">
               <label className="form-label">Description</label>
               <textarea
