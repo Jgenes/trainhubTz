@@ -1,0 +1,189 @@
+/* ==========================================================================
+   TrainingHub design tokens
+   Single source of truth for colour, type, spacing, radius, elevation.
+   Imported once (main.jsx) before every other stylesheet.
+   ========================================================================== */
+
+:root {
+  /* ---- Brand ramp (built around the existing TrainingHub navy #0a2e67) -- */
+  --brand-50: #eff5fd;
+  --brand-100: #dbe8fa;
+  --brand-200: #bcd4f4;
+  --brand-300: #90b6ea;
+  --brand-400: #5f92db;
+  --brand-500: #3a72c4;
+  --brand-600: #2859a6;
+  --brand-700: #1a4486;
+  --brand-800: #0a2e67;
+  --brand-900: #08224d;
+  --brand-950: #05162f;
+
+  /* ---- Accent (used sparingly: success, accreditation, highlights) ------ */
+  --accent-50: #e8f7f4;
+  --accent-100: #c7ece5;
+  --accent-500: #0f9487;
+  --accent-600: #0b7a70;
+  --accent-700: #0a645c;
+
+  /* ---- Rating / attention ---------------------------------------------- */
+  --amber-100: #fdf3d8;
+  --amber-400: #f0b429;
+  --amber-600: #b45309;
+
+  /* ---- Neutrals -------------------------------------------------------- */
+  --ink-900: #0d1626;
+  --ink-800: #1b2436;
+  --ink-700: #334155;
+  --ink-600: #475569;
+  --ink-500: #64748b;
+  --ink-400: #94a3b8;
+  --ink-300: #cbd5e1;
+  --ink-200: #e2e8f0;
+  --ink-100: #f1f5f9;
+  --ink-50: #f7f9fc;
+  --white: #ffffff;
+
+  /* ---- Semantic status ------------------------------------------------ */
+  --success-50: #ecfdf3;
+  --success-200: #abefc6;
+  --success-600: #067647;
+  --success-700: #05603a;
+  --warning-50: #fffaeb;
+  --warning-200: #fedf89;
+  --warning-600: #b54708;
+  --warning-700: #93370d;
+  --danger-50: #fef3f2;
+  --danger-200: #fecdca;
+  --danger-600: #b42318;
+  --danger-700: #912018;
+  --info-50: #eff8ff;
+  --info-200: #b2ddff;
+  --info-600: #175cd3;
+  --info-700: #1849a9;
+
+  /* ---- Surfaces & lines ------------------------------------------------ */
+  --surface: #ffffff;
+  --surface-subtle: #f7f9fc;
+  --surface-muted: #eef2f7;
+  --surface-inverse: var(--brand-950);
+  --border: #e4e9f0;
+  --border-strong: #cbd5e1;
+  --border-inverse: rgba(255, 255, 255, 0.14);
+
+  /* ---- Text ------------------------------------------------------------ */
+  --text: var(--ink-900);
+  --text-secondary: var(--ink-600);
+  --text-muted: #5b6b81;
+  --text-inverse: #f4f7fc;
+  --text-inverse-muted: #b9c9e2;
+
+  /* ---- Typography ------------------------------------------------------ */
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+
+  --text-2xs: 0.75rem; /* 12px */
+  --text-xs: 0.8125rem; /* 13px */
+  --text-sm: 0.875rem; /* 14px */
+  --text-base: 0.9375rem; /* 15px */
+  --text-md: 1rem; /* 16px */
+  --text-lg: 1.125rem; /* 18px */
+  --text-xl: 1.3125rem; /* 21px */
+  --text-2xl: 1.5rem; /* 24px */
+  --text-3xl: 1.875rem; /* 30px */
+  --display-sm: clamp(1.875rem, 1.35rem + 1.9vw, 2.5rem);
+  --display-md: clamp(2.125rem, 1.45rem + 2.6vw, 3.125rem);
+
+  --leading-tight: 1.2;
+  --leading-snug: 1.35;
+  --leading-normal: 1.6;
+  --leading-relaxed: 1.75;
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* ---- Spacing scale (4px base) --------------------------------------- */
+  --space-0: 0;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-7: 2rem;
+  --space-8: 2.5rem;
+  --space-9: 3rem;
+  --space-10: 4rem;
+  --space-11: 5rem;
+  --space-12: 6rem;
+
+  --section-y: clamp(3rem, 2.1rem + 3.6vw, 5.5rem);
+  --gutter: clamp(1rem, 0.6rem + 1.6vw, 1.75rem);
+
+  /* ---- Radii ----------------------------------------------------------- */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+  --radius-pill: 999px;
+
+  /* ---- Elevation ------------------------------------------------------- */
+  --shadow-xs: 0 1px 2px rgba(13, 22, 38, 0.06);
+  --shadow-sm: 0 1px 3px rgba(13, 22, 38, 0.08), 0 1px 2px rgba(13, 22, 38, 0.04);
+  --shadow-md: 0 8px 24px -12px rgba(13, 22, 38, 0.24),
+    0 2px 6px -2px rgba(13, 22, 38, 0.08);
+  --shadow-lg: 0 24px 48px -20px rgba(13, 22, 38, 0.32),
+    0 8px 16px -12px rgba(13, 22, 38, 0.16);
+  --shadow-focus: 0 0 0 3px rgba(58, 114, 196, 0.18);
+
+  /* ---- Motion ---------------------------------------------------------- */
+  --ease-standard: cubic-bezier(0.2, 0.7, 0.3, 1);
+  --duration-fast: 120ms;
+  --duration-base: 180ms;
+  --duration-slow: 280ms;
+
+  /* ---- Layout ---------------------------------------------------------- */
+  --header-height: 4.25rem;
+  --sidebar-width: 16.5rem;
+  --content-max: 75rem;
+
+  /* ---- Bootstrap bridge ------------------------------------------------
+     Bootstrap 5.3 components are themed through its own custom properties,
+     so map the ones we rely on onto the design tokens above.              */
+  --bs-primary: #0a2e67;
+  --bs-primary-rgb: 10, 46, 103;
+  --bs-link-color: var(--brand-700);
+  --bs-link-color-rgb: 26, 68, 134;
+  --bs-link-hover-color: var(--brand-600);
+  --bs-link-hover-color-rgb: 40, 89, 166;
+  --bs-body-font-family: var(--font-sans);
+  --bs-body-font-size: var(--text-base);
+  --bs-body-color: var(--text);
+  --bs-body-color-rgb: 13, 22, 38;
+  --bs-body-bg: var(--surface);
+  --bs-secondary-color: var(--text-muted);
+  --bs-secondary-color-rgb: 91, 107, 129;
+  --bs-border-color: var(--border);
+  --bs-border-radius: var(--radius-sm);
+  --bs-border-radius-sm: 6px;
+  --bs-border-radius-lg: var(--radius-md);
+  --bs-border-radius-xl: var(--radius-lg);
+  --bs-emphasis-color: var(--text);
+  --bs-heading-color: var(--ink-900);
+  --bs-focus-ring-color: rgba(58, 114, 196, 0.3);
+  --bs-font-sans-serif: var(--font-sans);
+  --bs-success: #067647;
+  --bs-success-rgb: 6, 118, 71;
+  --bs-warning: #b54708;
+  --bs-warning-rgb: 181, 71, 8;
+  --bs-danger: #b42318;
+  --bs-danger-rgb: 180, 35, 24;
+  --bs-info: #175cd3;
+  --bs-info-rgb: 23, 92, 211;
+  --bs-dark: #0d1626;
+  --bs-dark-rgb: 13, 22, 38;
+  --bs-light: #f7f9fc;
+  --bs-light-rgb: 247, 249, 252;
+}

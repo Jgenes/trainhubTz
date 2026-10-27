@@ -1,5 +1,3 @@
-import { Badge } from "react-bootstrap";
-import "../app.css";
 const categories = [
   "Business",
   "Artificial Intelligence",
@@ -17,17 +15,12 @@ const categories = [
 
 export default function CategoryChips() {
   return (
-    <div className="d-flex flex-wrap gap-2">
-      {categories.map((cat) => (
-        <Badge
-          key={cat}
-          bg="light"
-          text="dark"
-          className="px-3 py-2 rounded-pill border"
-        >
-          {cat}
-        </Badge>
+    <ul className="chip-row list-unstyled mb-0" role="list">
+      {categories.map((category) => (
+        <li key={category}>
+          <span className="chip">{category}</span>
+        </li>
       ))}
-    </div>
+    </ul>
   );
 }

@@ -1,18 +1,23 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // 1. Tumeongeza useNavigate
-import ProviderDashboardLayout from "./layouts/ProviderDashboardLayout";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import DataTable from "react-data-table-component";
-import { FaEye, FaEdit, FaTrash, FaCogs, FaPlus } from "react-icons/fa";
 import api from "../../api/axio";
+import ProviderDashboardLayout from "./layouts/ProviderDashboardLayout";
+import dataTableStyles from "../../styles/dataTableStyles";
+import StatusBadge from "../../components/StatusBadge";
+import ConfirmDialog from "../../components/ConfirmDialog";
 
 export default function ProviderDashboard() {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
   const [filterText, setFilterText] = useState("");
+  const [pendingDelete, setPendingDelete] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
-  const navigate = useNavigate(); // 2. Tunatengeneza 'dereva' wa kukupeleka page zingine
+  const navigate = useNavigate();
 
-  // Kuvuta data kutoka Laravel
   useEffect(() => {
     fetchCourses();
   }, []);
@@ -20,96 +25,103 @@ export default function ProviderDashboard() {
   const fetchCourses = async () => {
     try {
       setLoading(true);
+      setLoadError("");
       const response = await api.get("/courses");
       setCourses(response.data);
-      setLoading(false);
     } catch (error) {
       console.error("Error fetching courses:", error);
+      setLoadError("We could not load your courses. Please try again.");
+    } finally {
       setLoading(false);
     }
   };
 
-  // Filter data kulingana na search
   const filteredData = courses.filter(
     (item) =>
       item.title?.toLowerCase().includes(filterText.toLowerCase()) ||
-      item.category?.toLowerCase().includes(filterText.toLowerCase()),
+      item.category?.toLowerCase().includes(filterText.toLowerCase())
   );
 
-  // --- HAPA NDIPO MAREKEBISHO YAKO YALIPO ---
-
-  // Kuelekea kwenye View Course Page
   const handleView = (course) => {
     navigate(`/provider/viewCourse/${course.id}`);
   };
 
-  // Kuelekea kwenye Manage Cohorts Page
   const handleManage = (course) => {
     navigate(`/provider/cohortlist/${course.id}`);
   };
 
-  // Kuelekea kwenye Edit Page
-  const handleEdit = (course) => {
-    navigate(`/provider/editCourse/${course.id}`);
+  const handleEdit = () => {
+    toast.info("Course editing is not available yet.");
   };
 
-  const handleDelete = async (course) => {
-    if (window.confirm(`Are you sure you want to delete ${course.title}?`)) {
-      try {
-        await api.delete(`/courses/${course.id}`);
-        fetchCourses();
-        alert("Deleted successfully!");
-      } catch (error) {
-        alert("Failed to delete course.");
-      }
+  const confirmDelete = async () => {
+    if (!pendingDelete) return;
+
+    try {
+      setDeleting(true);
+      await api.delete(`/courses/${pendingDelete.id}`);
+      toast.success(`“${pendingDelete.title}” deleted.`);
+      setPendingDelete(null);
+      fetchCourses();
+    } catch (error) {
+      console.error("Delete failed:", error);
+      toast.error("Failed to delete course.");
+    } finally {
+      setDeleting(false);
     }
   };
 
-  // Columns
   const columns = [
-    { name: "ID", selector: (row) => row.id, sortable: true, width: "70px" },
-    { name: "Course Name", selector: (row) => row.title, sortable: true },
+    { name: "ID", selector: (row) => row.id, sortable: true, width: "80px" },
+    { name: "Course name", selector: (row) => row.title, sortable: true, wrap: true },
     { name: "Category", selector: (row) => row.category, sortable: true },
     { name: "Mode", selector: (row) => row.mode, sortable: true },
-    { name: "Status", selector: (row) => row.status, sortable: true },
+    {
+      name: "Status",
+      selector: (row) => row.status,
+      sortable: true,
+      cell: (row) => <StatusBadge status={row.status} />,
+    },
     {
       name: "Actions",
+      right: true,
       cell: (row) => (
-        <div className="d-flex gap-2">
-          {/* VIEW BUTTON */}
+        <div className="d-flex gap-1">
           <button
-            className="btn btn-sm btn-info"
+            type="button"
+            className="btn btn-ghost btn-icon btn-sm"
             onClick={() => handleView(row)}
-            title="View Details"
+            aria-label={`View ${row.title}`}
+            title="View course"
           >
-            <FaEye style={{ color: "white" }} />
+            <i className="bi bi-eye" aria-hidden="true" />
           </button>
-
-          {/* MANAGE COHORTS */}
           <button
-            className="btn btn-sm btn-warning"
+            type="button"
+            className="btn btn-ghost btn-icon btn-sm"
             onClick={() => handleManage(row)}
-            title="Manage Cohorts"
+            aria-label={`Manage cohorts for ${row.title}`}
+            title="Manage cohorts"
           >
-            <FaCogs style={{ color: "white" }} />
+            <i className="bi bi-calendar-event" aria-hidden="true" />
           </button>
-
-          {/* EDIT BUTTON */}
           <button
-            className="btn btn-sm btn-primary"
+            type="button"
+            className="btn btn-ghost btn-icon btn-sm"
             onClick={() => handleEdit(row)}
-            title="Edit Course"
+            aria-label={`Edit ${row.title}`}
+            title="Edit course"
           >
-            <FaEdit style={{ color: "white" }} />
+            <i className="bi bi-pencil" aria-hidden="true" />
           </button>
-
-          {/* DELETE BUTTON */}
           <button
-            className="btn btn-sm btn-danger"
-            onClick={() => handleDelete(row)}
-            title="Delete Course"
+            type="button"
+            className="btn btn-ghost btn-icon btn-sm text-danger"
+            onClick={() => setPendingDelete(row)}
+            aria-label={`Delete ${row.title}`}
+            title="Delete course"
           >
-            <FaTrash style={{ color: "white" }} />
+            <i className="bi bi-trash3" aria-hidden="true" />
           </button>
         </div>
       ),
@@ -118,45 +130,115 @@ export default function ProviderDashboard() {
 
   return (
     <ProviderDashboardLayout title="Courses">
-      <div className="container mt-4">
-        <div className="row justify-content-center">
-          <div className="col-md-12">
-            <div className="d-flex justify-content-between align-items-center mb-2">
-              <h5 className="mb-0">My Courses</h5>
+      <div className="page-header">
+        <div>
+          <h2 className="h4 mb-1">My courses</h2>
+          <p className="page-header__lead">
+            Create courses, keep details up to date and manage their availability.
+          </p>
+        </div>
+        <div className="page-header__actions">
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => navigate("/provider/createCourse")}
+          >
+            <i className="bi bi-plus-lg" aria-hidden="true" />
+            Create course
+          </button>
+        </div>
+      </div>
 
-              <div className="d-flex gap-2">
-                <input
-                  type="text"
-                  placeholder="Search by title or category..."
-                  className="form-control w-auto"
-                  style={{ minWidth: "250px" }}
-                  value={filterText}
-                  onChange={(e) => setFilterText(e.target.value)}
-                />
+      {loadError ? (
+        <div className="alert alert-danger d-flex align-items-center justify-content-between gap-3">
+          <span>{loadError}</span>
+          <button type="button" className="btn btn-sm btn-secondary-ink" onClick={fetchCourses}>
+            Retry
+          </button>
+        </div>
+      ) : null}
 
-                <button
-                  className="btn btn-sm btn-success d-flex align-items-center gap-1"
-                  onClick={() => navigate("/provider/createCourse")}
-                >
-                  <FaPlus />
-                  Create Course
-                </button>
-              </div>
-            </div>
+      <div className="table-panel">
+        <div className="table-toolbar">
+          <div className="table-toolbar__search">
+            <i className="bi bi-search" aria-hidden="true" />
+            <label className="visually-hidden" htmlFor="course-search">
+              Search courses
+            </label>
+            <input
+              id="course-search"
+              type="search"
+              className="form-control"
+              placeholder="Search by title or category"
+              value={filterText}
+              onChange={(event) => setFilterText(event.target.value)}
+            />
+          </div>
+          <span className="text-xs text-muted-ink ms-auto">
+            {filteredData.length} of {courses.length} courses
+          </span>
+        </div>
 
+        {!loading && filteredData.length === 0 ? (
+          <div className="empty-state border-0 bg-transparent">
+            <span className="empty-state__icon" aria-hidden="true">
+              <i className={`bi ${courses.length === 0 ? "bi-journal-plus" : "bi-search"}`} />
+            </span>
+            <h3 className="empty-state__title">
+              {courses.length === 0 ? "No courses yet" : "No courses match your search"}
+            </h3>
+            <p className="empty-state__text">
+              {courses.length === 0
+                ? "Create your first course, then add a cohort to open enrolment."
+                : `Nothing matches “${filterText}”. Try a different title or category.`}
+            </p>
+            {courses.length === 0 ? (
+              <button
+                type="button"
+                className="btn btn-primary btn-sm empty-state__action"
+                onClick={() => navigate("/provider/createCourse")}
+              >
+                Create course
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="btn btn-secondary-ink btn-sm empty-state__action"
+                onClick={() => setFilterText("")}
+              >
+                Clear search
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="table-scroll" tabIndex={0}>
             <DataTable
               columns={columns}
               data={filteredData}
               pagination
               highlightOnHover
-              striped
               responsive
+              customStyles={dataTableStyles}
               progressPending={loading}
-              noDataComponent="No courses found. Create your first course!"
             />
           </div>
-        </div>
+        )}
       </div>
+
+      <ConfirmDialog
+        open={Boolean(pendingDelete)}
+        title="Delete course?"
+        description={
+          pendingDelete
+            ? `“${pendingDelete.title}” and its cohorts will be removed. This cannot be undone.`
+            : ""
+        }
+        confirmLabel="Delete course"
+        destructive
+        busy={deleting}
+        onConfirm={confirmDelete}
+        onCancel={() => setPendingDelete(null)}
+      />
     </ProviderDashboardLayout>
   );
 }

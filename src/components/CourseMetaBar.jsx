@@ -1,66 +1,60 @@
-import React from "react";
-import { FaStar, FaInfoCircle } from "react-icons/fa";
-import "../app.css";
+const metaItems = [
+  {
+    label: "Series",
+    value: "8 course series",
+    sub: "Earn a career credential that demonstrates your expertise",
+    icon: "bi-collection-play",
+  },
+  {
+    label: "Mode",
+    value: "Online",
+    sub: "Live sessions and self-paced content",
+    icon: "bi-broadcast",
+  },
+  {
+    label: "Location",
+    value: "Dar es Salaam",
+    sub: "Physical sessions also available",
+    icon: "bi-geo-alt",
+    info: "Some cohorts are delivered on site in Dar es Salaam.",
+  },
+  {
+    label: "Duration",
+    value: "5 weeks",
+    sub: "Approximately 4–6 hours per week",
+    icon: "bi-hourglass-split",
+  },
+  {
+    label: "Schedule",
+    value: "Flexible",
+    sub: "Learn at your own pace",
+    icon: "bi-calendar3",
+  },
+];
 
-const CourseMetaBar = () => {
+export default function CourseMetaBar() {
   return (
-    <div className="course-meta-wrapper">
-      <div className="container">
-        <div className="row text-center text-md-start">
-          {/* Course Series */}
-          <div className="col-md-3 meta-item">
-            <h6 className="meta-title" style={{ fontSize: "13px" }}>
-              8 course series
-            </h6>
-            <p className="meta-text " style={{ fontSize: "13px" }}>
-              Earn a career credential that demonstrates your expertise
+    <div className="container mt-4">
+      <div className="meta-strip">
+        {metaItems.map((item) => (
+          <div className="meta-cell" key={item.label}>
+            <p className="meta-cell__label">
+              <i className={`bi ${item.icon}`} aria-hidden="true" />
+              {item.label}
+              {item.info ? (
+                <i
+                  className="bi bi-info-circle"
+                  role="img"
+                  aria-label={item.info}
+                  title={item.info}
+                />
+              ) : null}
             </p>
+            <p className="meta-cell__value">{item.value}</p>
+            <p className="meta-cell__sub">{item.sub}</p>
           </div>
-
-          {/* Rating */}
-          <div className="col-md-2 meta-item">
-            <h6 className="meta-title" style={{ fontSize: "13px" }}>
-              Mode
-            </h6>
-            <p className="meta-text" style={{ fontSize: "13px" }}>
-              Online
-            </p>
-          </div>
-
-          {/* Level */}
-          <div className="col-md-2 meta-item">
-            <h6 className="meta-title" style={{ fontSize: "13px" }}>
-              Location
-              <FaInfoCircle className="info" />
-            </h6>
-            <p className="meta-text" style={{ fontSize: "13px" }}>
-              Dar-es-salaam
-            </p>
-          </div>
-
-          {/* Duration */}
-          <div className="col-md-2 meta-item" style={{ fontSize: "13px" }}>
-            <h6 className="meta-title" style={{ fontSize: "13px" }}>
-              Duration
-            </h6>
-            <p className="meta-text" style={{ fontSize: "13px" }}>
-              5 Weeks
-            </p>
-          </div>
-
-          {/* Schedule */}
-          <div className="col-md-3 meta-item">
-            <h6 className="meta-title" style={{ fontSize: "13px" }}>
-              Flexible schedule
-            </h6>
-            <p className="meta-text" style={{ fontSize: "13px" }}>
-              Learn at your own pace
-            </p>
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   );
-};
-
-export default CourseMetaBar;
+}
