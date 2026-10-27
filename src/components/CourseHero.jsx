@@ -1,70 +1,59 @@
-import React from "react";
-import IBMLogo from "../assets/pdpc.png";
-import SATA from "../assets/sata.jfif"; // provider logo
-import "../app.css";
+import { Link } from "react-router-dom";
+import PDPCLogo from "../assets/pdpc.png";
+import CourseArt from "../assets/banner2.jpg";
 
 const CourseHero = () => {
   return (
-    <section className="course-hero">
-      <div className="container">
-        <div className="row align-items-center">
-          {/* LEFT CONTENT */}
-          <div className="col-md-7">
-            <img src={IBMLogo} alt="Provider Logo" className="provider-logo" />
+    <section className="course-hero" aria-labelledby="course-title">
+      <div className="container course-hero__grid">
+        <div>
+          <p className="course-hero__provider">
+            <img src={PDPCLogo} alt="" width="40" height="40" />
+            Personal Data Protection Commission
+          </p>
 
-            <h1 className="course-title">
-              IBM RAG and Agentic AI Professional Certificate
-            </h1>
+          <h1 className="course-hero__title" id="course-title">
+            IBM RAG and Agentic AI Professional Certificate
+          </h1>
 
-            <p className="course-description" style={{ fontSize: "13px" }}>
-              Build real-world AI with RAG and agentic AI. Use AI tools to
-              streamline automation, drive innovation, and take your career
-              further—faster.
-            </p>
+          <p className="course-hero__lead">
+            Build real-world AI with RAG and agentic AI. Use AI tools to streamline
+            automation, drive innovation, and take your career further—faster.
+          </p>
 
-            <div className="instructors">
-              <span className="fw-semibold bnm">Instructors:</span>{" "}
-              <a href="#" style={{ fontSize: "13px" }}>
-                Personal Data Protection Commission
-              </a>
-            </div>
+          <div className="btn-row mt-4">
+            <Link className="btn btn-primary btn-lg" to="/checkout">
+              Enrol now
+              <i className="bi bi-arrow-right" aria-hidden="true" />
+            </Link>
+            <Link className="btn btn-secondary-ink btn-lg" to="/courseLearning">
+              Preview a lesson
+            </Link>
+          </div>
 
-            <div className="mt-4">
-              <a href="/courseLearning">
-                <button
-                  style={{ fontSize: "13px" }}
-                  className="btn btn-primary enroll-btn"
-                >
-                  Enroll
-                  <small className="d-block">Deadline Jan 13</small>
-                </button>
-              </a>
-            </div>
-
-            <div className="stats mt-3" style={{ fontSize: "13px" }}>
+          <div className="course-hero__meta">
+            <span>
+              <i className="bi bi-people" aria-hidden="true" />
               <strong>42,272</strong> already enrolled
-            </div>
-
-            <div className="included mt-2"></div>
+            </span>
+            <span>
+              <i className="bi bi-calendar-event" aria-hidden="true" />
+              Enrolment deadline: 13 Jan
+            </span>
+            <span>
+              <i className="bi bi-patch-check" aria-hidden="true" />
+              Certificate included
+            </span>
           </div>
+        </div>
 
-          {/* RIGHT DECORATION */}
-          <div className="col-md-5">
-            <div className="hero-art">
-              <img
-                src={SATA}
-                alt="Data Protection"
-                style={{
-                  width: "350px", // smaller width than height
-                  height: "330px", // taller height
-                  display: "block",
-                  margin: "0 auto",
-                  objectFit: "cover", // ensures image covers the oval nicely
-                  borderRadius: "50%", // makes it oval
-                }}
-              />
-            </div>
-          </div>
+        <div className="course-hero__art">
+          <img
+            src={CourseArt}
+            alt="Learner exploring AI and immersive training content"
+            width="651"
+            height="466"
+          />
         </div>
       </div>
     </section>

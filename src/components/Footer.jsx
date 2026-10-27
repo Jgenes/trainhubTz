@@ -1,144 +1,141 @@
-export default function Footer() {
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import Logo from "./Logo";
+import { isAuthenticated } from "../utils/auth";
+
+const columns = [
+  {
+    title: "TrainingHub",
+    links: [
+      { label: "Browse trainings", to: "/trainings" },
+      { label: "My learning", to: "/learning", authOnly: true },
+      { label: "Become a training provider", to: "/tenant-register" },
+      { label: "Provider sign in", to: "/login" },
+    ],
+  },
+  {
+    title: "Company",
+    links: [
+      { label: "About us", href: "#" },
+      { label: "Careers", href: "#" },
+      { label: "Blog", href: "#" },
+      { label: "Contact us", href: "#" },
+    ],
+  },
+  {
+    title: "Support",
+    links: [
+      { label: "Help and support", href: "#" },
+      { label: "Get the app", href: "#" },
+      { label: "Affiliate", href: "#" },
+      { label: "Investors", href: "#" },
+    ],
+  },
+];
+
+const legalLinks = [
+  { label: "Terms", href: "#" },
+  { label: "Privacy policy", href: "#" },
+  { label: "Cookie settings", href: "#" },
+  { label: "Sitemap", href: "#" },
+  { label: "Accessibility", href: "#" },
+];
+
+const socialLinks = [
+  { label: "Facebook", icon: "bi-facebook", href: "#" },
+  { label: "Twitter", icon: "bi-twitter-x", href: "#" },
+  { label: "Instagram", icon: "bi-instagram", href: "#" },
+  { label: "LinkedIn", icon: "bi-linkedin", href: "#" },
+];
+
+function FooterLink({ item }) {
+  if (item.to) {
+    return (
+      <Link className="footer-link" to={item.to}>
+        {item.label}
+      </Link>
+    );
+  }
+
   return (
-    <footer className="footer mt-5 pt-5 pb-3">
+    <a className="footer-link" href={item.href || "#"}>
+      {item.label}
+    </a>
+  );
+}
+
+export default function Footer() {
+  const [signedIn] = useState(isAuthenticated);
+
+  const visibleLinks = (links) => links.filter((item) => !item.authOnly || signedIn);
+
+  return (
+    <footer className="site-footer">
       <div className="container">
-        {/* TOP LINKS */}
-        <div className="row text-white">
-          <div className="col-6 col-md-3 mb-3">
-            <ul className="list-unstyled small">
-              <li>
-                <a href="#" className="footer-link">
-                  TrainingHub
-                </a>
-              </li>
-              <li>
-                <a href="#" className="footer-link">
-                  Teach on TrainingHub
-                </a>
-              </li>
-              <li>
-                <a href="#" className="footer-link">
-                  Get the app
-                </a>
-              </li>
-              <li>
-                <a href="#" className="footer-link">
-                  About us
-                </a>
-              </li>
-              <li>
-                <a href="#" className="footer-link">
-                  Contact us
-                </a>
-              </li>
-            </ul>
-          </div>
+        <div className="footer-grid">
+          <div className="footer-brand">
+            <Logo inverse subtitle="Training marketplace" />
+            <p className="footer-blurb">
+              TrainingHub connects learners across Tanzania with accredited courses and
+              upcoming intakes from universities, colleges and professional training
+              providers.
+            </p>
 
-          <div className="col-6 col-md-3 mb-3">
-            <ul className="list-unstyled small">
-              <li>
-                <a href="#" className="footer-link">
-                  Careers
+            <div className="footer-social">
+              {socialLinks.map((social) => (
+                <a
+                  key={social.label}
+                  href={social.href}
+                  aria-label={social.label}
+                  rel="noreferrer"
+                >
+                  <i className={`bi ${social.icon}`} aria-hidden="true" />
                 </a>
-              </li>
-              <li>
-                <a href="#" className="footer-link">
-                  Blog
-                </a>
-              </li>
-              <li>
-                <a href="#" className="footer-link">
-                  Help and Support
-                </a>
-              </li>
-              <li>
-                <a href="#" className="footer-link">
-                  Affiliate
-                </a>
-              </li>
-              <li>
-                <a href="#" className="footer-link">
-                  Investors
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <div className="col-6 col-md-3 mb-3">
-            <ul className="list-unstyled small">
-              <li>
-                <a href="#" className="footer-link">
-                  Terms
-                </a>
-              </li>
-              <li className="mt-3">
-                <a href="#" className="footer-link">
-                  Privacy Policy
-                </a>
-              </li>
-              <li>
-                <a href="#" className="footer-link">
-                  Cookie Settings
-                </a>
-              </li>
-              <li>
-                <a href="#" className="footer-link">
-                  Sitemap
-                </a>
-              </li>
-              <li>
-                <a href="#" className="footer-link">
-                  Accessibility
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* LANGUAGE + SOCIAL MEDIA */}
-          <div className="col-6 col-md-3 d-flex flex-column gap-3">
-            <ul className="list-unstyled small">
-              <li>
-                <a href="#" className="footer-link">
-                  P.O.BOX 123 Dar-es-Salaam
-                </a>
-              </li>
-              <li>
-                <a href="#" className="footer-link">
-                  +255 745 732 935
-                </a>
-              </li>
-              <li>
-                <a href="#" className="footer-link">
-                  info@traininghub.com
-                </a>
-              </li>
-            </ul>
-            <div className="d-flex gap-3 footer1">
-              <a href="#" className="footer-social">
-                <i className="bi bi-facebook"></i>
-              </a>
-              <a href="#" className="footer-social">
-                <i className="bi bi-twitter"></i>
-              </a>
-              <a href="#" className="footer-social">
-                <i className="bi bi-instagram"></i>
-              </a>
-              <a href="#" className="footer-social">
-                <i className="bi bi-linkedin"></i>
-              </a>
+              ))}
             </div>
+          </div>
+
+          {columns.map((column) => (
+            <nav key={column.title} aria-label={column.title}>
+              <h2 className="footer-title">{column.title}</h2>
+              <ul className="footer-list">
+                {visibleLinks(column.links).map((item) => (
+                  <li key={item.label}>
+                    <FooterLink item={item} />
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          ))}
+
+          <div>
+            <h2 className="footer-title">Contact</h2>
+            <address className="footer-contact">
+              <span>
+                <i className="bi bi-geo-alt" aria-hidden="true" />
+                P.O. Box 123, Dar es Salaam, Tanzania
+              </span>
+              <a href="tel:+255745732935">
+                <i className="bi bi-telephone" aria-hidden="true" />
+                +255 745 732 935
+              </a>
+              <a href="mailto:info@traininghub.com">
+                <i className="bi bi-envelope" aria-hidden="true" />
+                info@traininghub.com
+              </a>
+            </address>
           </div>
         </div>
 
-        {/* BOTTOM ROW */}
-        <div className="d-flex justify-content-between align-items-center mt-4 flex-wrap text-white-50 small">
-          <img
-            src="https://via.placeholder.com/100x25/ffffff/000000?text=Logo"
-            alt="Logo"
-            style={{ maxHeight: "28px" }}
-            className="mb-2"
-          />
-          <span>© {new Date().getFullYear()} TrainingHub</span>
+        <div className="footer-bottom">
+          <span>© {new Date().getFullYear()} TrainingHub. All rights reserved.</span>
+          <div className="footer-bottom__links">
+            {legalLinks.map((item) => (
+              <a key={item.label} className="footer-link" href={item.href}>
+                {item.label}
+              </a>
+            ))}
+          </div>
         </div>
       </div>
     </footer>

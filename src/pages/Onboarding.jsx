@@ -1,16 +1,15 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import api from "../api/axio";
-import "react-toastify/dist/ReactToastify.css";
 import NavBar from "../components/NavBar";
 import Footer from "../components/Footer";
 
 const steps = [
-  "Company Identity",
-  "Address & Location",
-  "Primary Contact",
-  "Review & Submit",
+  "Company identity",
+  "Address & location",
+  "Primary contact",
+  "Review & submit",
 ];
 
 const providerTypes = [
@@ -34,10 +33,29 @@ const regions = [
   "Kilimanjaro",
 ];
 
+const fieldLabels = {
+  legal_name: "Legal name",
+  brand_name: "Trading / brand name",
+  provider_type: "Provider type",
+  registration_ref: "Business registration (BRELA)",
+  tin: "TIN",
+  website: "Website / social link",
+  country: "Country",
+  region: "Region",
+  district: "District / city",
+  physical_address: "Physical address",
+  google_maps_link: "Google Maps link",
+  contact_name: "Contact name",
+  contact_role: "Role / title",
+  contact_phone: "Phone number",
+  contact_email: "Email address",
+};
+
 function ProviderOnboardingFull() {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const [form, setForm] = useState({
     legal_name: "",
@@ -57,49 +75,55 @@ function ProviderOnboardingFull() {
     contact_email: "",
   });
 
-  const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
-
-  // Validate required fields per step
-  const next = () => {
-    if (step === 0) {
-      if (!form.legal_name || !form.provider_type) {
-        return toast.error("Legal Name and Provider Type are required");
-      }
-    }
-
-    if (step === 1) {
-      if (!form.region) {
-        return toast.error("Region is required");
-      }
-    }
-
-    if (step === 2) {
-      if (!form.contact_name || !form.contact_phone) {
-        return toast.error("Contact Name and Phone Number are required");
-      }
-    }
-
-    setStep(step + 1);
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setForm((current) => ({ ...current, [name]: value }));
+    if (errors[name]) setErrors((current) => ({ ...current, [name]: undefined }));
   };
 
-  const back = () => setStep(step - 1);
+  const requiredByStep = [
+    { legal_name: "Enter the provider's legal name.", provider_type: "Select a provider type." },
+    { region: "Select the region where the provider operates." },
+    {
+      contact_name: "Enter the name of the primary contact.",
+      contact_phone: "Enter a contact phone number.",
+    },
+    {},
+  ];
+
+  const validateStep = (index) => {
+    const nextErrors = {};
+    Object.entries(requiredByStep[index]).forEach(([field, message]) => {
+      if (!String(form[field] || "").trim()) nextErrors[field] = message;
+    });
+
+    setErrors(nextErrors);
+
+    if (Object.keys(nextErrors).length > 0) {
+      toast.error("Please complete the required fields.");
+      return false;
+    }
+
+    return true;
+  };
+
+  const next = () => {
+    if (!validateStep(step)) return;
+    setStep((current) => Math.min(current + 1, steps.length - 1));
+  };
+
+  const back = () => setStep((current) => Math.max(current - 1, 0));
 
   const handleSubmit = async () => {
-    // Final minimal validation
-    const required = [
-      "legal_name",
-      "provider_type",
-      "region",
-      "contact_name",
-      "contact_phone",
-    ];
-
-    const missing = required.filter((f) => !form[f]);
-    if (missing.length > 0)
-      return toast.error(`Please fill: ${missing.join(", ")}`);
+    for (let index = 0; index < steps.length - 1; index += 1) {
+      if (!validateStep(index)) {
+        setStep(index);
+        return;
+      }
+    }
 
     setLoading(true);
+
     try {
       const res = await api.post("/provider/onboarding", form);
       toast.success(res.data.message || "Onboarding submitted successfully!");
@@ -112,211 +136,332 @@ function ProviderOnboardingFull() {
   };
 
   return (
-    <>
+    <div className="page">
+      <a className="skip-link" href="#main">
+        Skip to content
+      </a>
       <NavBar />
-      <div className="container mt-4">
-        <div className="row justify-content-center">
-          <div className="col-md-6">
-            <ToastContainer />
-            <h3 className="t3">Provider Onboarding</h3>
-            <hr className="h2 mb-2" />
 
-            <div className="mb-2 mt-3">
-              {steps.map((s, i) => (
-                <span
-                  key={i}
-                  className={`me-3 ${step === i ? "fw-bold text-primary" : ""}`}
-                >
-                  {i + 1}. {s}
-                </span>
-              ))}
-            </div>
-
-            {step === 0 && (
-              <>
-                <input
-                  className="form-control mb-2"
-                  name="legal_name"
-                  placeholder="Legal Name *"
-                  value={form.legal_name}
-                  onChange={handleChange}
-                />
-                <input
-                  className="form-control mb-2"
-                  name="brand_name"
-                  placeholder="Trading / Brand Name"
-                  value={form.brand_name}
-                  onChange={handleChange}
-                />
-                <select
-                  className="form-control mb-2"
-                  name="provider_type"
-                  value={form.provider_type}
-                  onChange={handleChange}
-                >
-                  <option value="">Select Provider Type *</option>
-                  {providerTypes.map((p) => (
-                    <option key={p} value={p}>
-                      {p}
-                    </option>
-                  ))}
-                </select>
-                <input
-                  className="form-control mb-2"
-                  name="registration_ref"
-                  placeholder="Business Registration Ref (BRELA)"
-                  value={form.registration_ref}
-                  onChange={handleChange}
-                />
-                <input
-                  className="form-control mb-2"
-                  name="tin"
-                  placeholder="TIN"
-                  value={form.tin}
-                  onChange={handleChange}
-                />
-                <input
-                  className="form-control mb-2"
-                  name="website"
-                  placeholder="Website / Social Link"
-                  value={form.website}
-                  onChange={handleChange}
-                />
-              </>
-            )}
-
-            {step === 1 && (
-              <>
-                <select
-                  className="form-control mb-2"
-                  name="region"
-                  value={form.region}
-                  onChange={handleChange}
-                >
-                  <option value="">Select Region *</option>
-                  {regions.map((r) => (
-                    <option key={r} value={r}>
-                      {r}
-                    </option>
-                  ))}
-                </select>
-                <input
-                  className="form-control mb-2"
-                  name="district"
-                  placeholder="District / City"
-                  value={form.district}
-                  onChange={handleChange}
-                />
-                <input
-                  className="form-control mb-2"
-                  name="physical_address"
-                  placeholder="Physical Address"
-                  value={form.physical_address}
-                  onChange={handleChange}
-                />
-                <input
-                  className="form-control mb-2"
-                  name="google_maps_link"
-                  placeholder="Google Maps Link"
-                  value={form.google_maps_link}
-                  onChange={handleChange}
-                />
-              </>
-            )}
-
-            {step === 2 && (
-              <>
-                <input
-                  className="form-control mb-2"
-                  name="contact_name"
-                  placeholder="Contact Name *"
-                  value={form.contact_name}
-                  onChange={handleChange}
-                />
-                <input
-                  className="form-control mb-2"
-                  name="contact_role"
-                  placeholder="Role / Title"
-                  value={form.contact_role}
-                  onChange={handleChange}
-                />
-                <input
-                  className="form-control mb-2"
-                  name="contact_phone"
-                  placeholder="Phone Number *"
-                  value={form.contact_phone}
-                  onChange={handleChange}
-                />
-                <input
-                  className="form-control mb-2"
-                  name="contact_email"
-                  placeholder="Email Address"
-                  value={form.contact_email}
-                  onChange={handleChange}
-                />
-              </>
-            )}
-
-            {step === 3 && (
-              <div className="border p-3 bg-light">
-                <h5>Review Details</h5>
-                {Object.keys(form).map((k) => (
-                  <p key={k}>
-                    <b>{k.replace(/_/g, " ")}:</b> {form[k] || "-"}
-                  </p>
-                ))}
+      <main id="main" className="page__main">
+        <div className="container section--tight">
+          <div className="container-narrow px-0">
+            <header className="page-header">
+              <div>
+                <p className="eyebrow">For training providers</p>
+                <h1 className="page-header__title">Provider onboarding</h1>
+                <p className="page-header__lead">
+                  Tell us about your organisation. We verify every provider before
+                  courses go live.
+                </p>
               </div>
-            )}
+            </header>
 
-            <div className="mt-3">
-              {step > 0 && (
-                <button
-                  style={{
-                    backgroundColor: "#0a2e67",
-                    fontSize: "13px",
-                    borderColor: "#0a2e67",
-                  }}
-                  className="btn btn-secondary me-2"
-                  onClick={back}
+            <ol className="stepper">
+              {steps.map((label, index) => (
+                <li
+                  key={label}
+                  className={`step${index === step ? " is-active" : ""}${
+                    index < step ? " is-done" : ""
+                  }`}
+                  aria-current={index === step ? "step" : undefined}
                 >
-                  Back
-                </button>
-              )}
+                  <span className="step__num" aria-hidden="true">
+                    {index < step ? <i className="bi bi-check-lg" /> : index + 1}
+                  </span>
+                  {label}
+                </li>
+              ))}
+            </ol>
 
-              {step < steps.length - 1 && (
-                <button
-                  style={{
-                    backgroundColor: "#0a2e67",
-                    fontSize: "13px",
-                    borderColor: "#0a2e67",
-                  }}
-                  className="btn btn-primary"
-                  onClick={next}
-                >
-                  Next
-                </button>
-              )}
+            <div className="panel">
+              {step === 0 ? (
+                <div className="form-grid form-grid--2">
+                  <div className="field mb-0">
+                    <label className="form-label" htmlFor="legal_name">
+                      Legal name <span className="required-mark">*</span>
+                    </label>
+                    <input
+                      id="legal_name"
+                      className={`form-control${errors.legal_name ? " is-invalid" : ""}`}
+                      name="legal_name"
+                      value={form.legal_name}
+                      onChange={handleChange}
+                      aria-invalid={Boolean(errors.legal_name)}
+                      autoComplete="organization"
+                    />
+                    {errors.legal_name ? (
+                      <span className="field-error">{errors.legal_name}</span>
+                    ) : null}
+                  </div>
 
-              {step === steps.length - 1 && (
-                <button
-                  style={{
-                    backgroundColor: "#0a2e67",
-                    fontSize: "13px",
-                    borderColor: "#0a2e67",
-                  }}
-                  className="btn btn-success btnBoarding"
-                  onClick={handleSubmit}
-                  disabled={loading}
-                >
-                  {loading ? "Submitting..." : "Submit"}
-                </button>
-              )}
+                  <div className="field mb-0">
+                    <label className="form-label" htmlFor="brand_name">
+                      Trading / brand name
+                    </label>
+                    <input
+                      id="brand_name"
+                      className="form-control"
+                      name="brand_name"
+                      value={form.brand_name}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="field mb-0">
+                    <label className="form-label" htmlFor="provider_type">
+                      Provider type <span className="required-mark">*</span>
+                    </label>
+                    <select
+                      id="provider_type"
+                      className={`form-select${errors.provider_type ? " is-invalid" : ""}`}
+                      name="provider_type"
+                      value={form.provider_type}
+                      onChange={handleChange}
+                      aria-invalid={Boolean(errors.provider_type)}
+                    >
+                      <option value="">Select provider type</option>
+                      {providerTypes.map((type) => (
+                        <option key={type} value={type}>
+                          {type}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.provider_type ? (
+                      <span className="field-error">{errors.provider_type}</span>
+                    ) : null}
+                  </div>
+
+                  <div className="field mb-0">
+                    <label className="form-label" htmlFor="registration_ref">
+                      Business registration (BRELA)
+                    </label>
+                    <input
+                      id="registration_ref"
+                      className="form-control"
+                      name="registration_ref"
+                      value={form.registration_ref}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="field mb-0">
+                    <label className="form-label" htmlFor="tin">
+                      TIN
+                    </label>
+                    <input
+                      id="tin"
+                      className="form-control"
+                      name="tin"
+                      value={form.tin}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="field mb-0">
+                    <label className="form-label" htmlFor="website">
+                      Website / social link
+                    </label>
+                    <input
+                      id="website"
+                      className="form-control"
+                      name="website"
+                      placeholder="https://"
+                      value={form.website}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
+              ) : null}
+
+              {step === 1 ? (
+                <div className="form-grid form-grid--2">
+                  <div className="field mb-0">
+                    <label className="form-label" htmlFor="region">
+                      Region <span className="required-mark">*</span>
+                    </label>
+                    <select
+                      id="region"
+                      className={`form-select${errors.region ? " is-invalid" : ""}`}
+                      name="region"
+                      value={form.region}
+                      onChange={handleChange}
+                      aria-invalid={Boolean(errors.region)}
+                    >
+                      <option value="">Select region</option>
+                      {regions.map((region) => (
+                        <option key={region} value={region}>
+                          {region}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.region ? (
+                      <span className="field-error">{errors.region}</span>
+                    ) : null}
+                  </div>
+
+                  <div className="field mb-0">
+                    <label className="form-label" htmlFor="district">
+                      District / city
+                    </label>
+                    <input
+                      id="district"
+                      className="form-control"
+                      name="district"
+                      value={form.district}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="field mb-0 field--full">
+                    <label className="form-label" htmlFor="physical_address">
+                      Physical address
+                    </label>
+                    <input
+                      id="physical_address"
+                      className="form-control"
+                      name="physical_address"
+                      value={form.physical_address}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="field mb-0 field--full">
+                    <label className="form-label" htmlFor="google_maps_link">
+                      Google Maps link
+                    </label>
+                    <input
+                      id="google_maps_link"
+                      className="form-control"
+                      name="google_maps_link"
+                      placeholder="https://maps.google.com/…"
+                      value={form.google_maps_link}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
+              ) : null}
+
+              {step === 2 ? (
+                <div className="form-grid form-grid--2">
+                  <div className="field mb-0">
+                    <label className="form-label" htmlFor="contact_name">
+                      Contact name <span className="required-mark">*</span>
+                    </label>
+                    <input
+                      id="contact_name"
+                      className={`form-control${errors.contact_name ? " is-invalid" : ""}`}
+                      name="contact_name"
+                      value={form.contact_name}
+                      onChange={handleChange}
+                      aria-invalid={Boolean(errors.contact_name)}
+                    />
+                    {errors.contact_name ? (
+                      <span className="field-error">{errors.contact_name}</span>
+                    ) : null}
+                  </div>
+
+                  <div className="field mb-0">
+                    <label className="form-label" htmlFor="contact_role">
+                      Role / title
+                    </label>
+                    <input
+                      id="contact_role"
+                      className="form-control"
+                      name="contact_role"
+                      value={form.contact_role}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="field mb-0">
+                    <label className="form-label" htmlFor="contact_phone">
+                      Phone number <span className="required-mark">*</span>
+                    </label>
+                    <input
+                      id="contact_phone"
+                      type="tel"
+                      className={`form-control${errors.contact_phone ? " is-invalid" : ""}`}
+                      name="contact_phone"
+                      value={form.contact_phone}
+                      onChange={handleChange}
+                      aria-invalid={Boolean(errors.contact_phone)}
+                    />
+                    {errors.contact_phone ? (
+                      <span className="field-error">{errors.contact_phone}</span>
+                    ) : null}
+                  </div>
+
+                  <div className="field mb-0">
+                    <label className="form-label" htmlFor="contact_email">
+                      Email address
+                    </label>
+                    <input
+                      id="contact_email"
+                      type="email"
+                      className="form-control"
+                      name="contact_email"
+                      value={form.contact_email}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
+              ) : null}
+
+              {step === 3 ? (
+                <div>
+                  <h2 className="h5 mb-3">Review details</h2>
+                  <table className="review-table">
+                    <tbody>
+                      {Object.keys(form).map((key) => (
+                        <tr key={key}>
+                          <th scope="row">{fieldLabels[key] || key.replace(/_/g, " ")}</th>
+                          <td>{form[key] || "—"}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : null}
+
+              <div className="btn-row mt-5 pt-4 border-top">
+                {step > 0 ? (
+                  <button type="button" className="btn btn-secondary-ink" onClick={back}>
+                    <i className="bi bi-arrow-left" aria-hidden="true" /> Back
+                  </button>
+                ) : null}
+
+                {step < steps.length - 1 ? (
+                  <button type="button" className="btn btn-primary ms-auto" onClick={next}>
+                    Continue <i className="bi bi-arrow-right" aria-hidden="true" />
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    className="btn btn-primary ms-auto"
+                    onClick={handleSubmit}
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <>
+                        <span
+                          className="spinner-border spinner-border-sm"
+                          aria-hidden="true"
+                        />
+                        Submitting…
+                      </>
+                    ) : (
+                      "Submit for verification"
+                    )}
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </main>
+
       <Footer />
-    </>
+    </div>
   );
 }
 

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-label="TrainingHub">
+  <rect width="32" height="32" rx="8" fill="#0a2e67" />
+  <path d="M16 8.2 25.6 12.6 16 17 6.4 12.6 16 8.2Z" fill="#ffffff" />
+  <path
+    d="M10.2 15v4.9c0 .6.32 1.15.84 1.44 1.5.8 3.2 1.2 4.96 1.2s3.46-.4 4.96-1.2c.52-.29.84-.84.84-1.44V15L16 17.6 10.2 15Z"
+    fill="#ffffff"
+    opacity=".82"
+  />
+  <path d="M24.4 13.6v4.6" stroke="#9ec1f0" stroke-width="1.6" stroke-linecap="round" />
+</svg>

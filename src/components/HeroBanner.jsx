@@ -1,68 +1,76 @@
-import React from "react";
-import bannerImg from "../assets/banner2.jpg";
-// you can also split images later if needed
-import "../app.css";
-function HeroBanner() {
+import { Link } from "react-router-dom";
+import PDPC from "../assets/pdpc.png";
+
+const features = [
+  "Learn AI and more",
+  "Prep for a certification",
+  "Practice with AI coaching",
+  "Advance your career",
+];
+
+/**
+ * Featured programme panel (previously the "Personal Data Protection Training"
+ * hero banner).
+ */
+export default function HeroBanner() {
   return (
-    <div className="container my-5 banner5">
-      <div
-        className="row align-items-center text-white p-4 p-md-5"
-        style={{
-          backgroundColor: "#0a2e67",
-          borderRadius: "28px",
-          minHeight: "420px",
-        }}
-      >
-        {/* LEFT CONTENT */}
-        <div className="col-md-6">
-          <h1 className="fw-bold mb-3">
-            Personal Data Protection <br /> Training
-          </h1>
+    <section className="feature" aria-labelledby="featured-programme-title">
+      <div>
+        <p className="eyebrow eyebrow--inverse">Featured programme</p>
+        <h2 className="feature__title" id="featured-programme-title">
+          Personal Data Protection Training
+        </h2>
+        <p className="feature__lead">
+          Future-proof your skills with Personal Plan. Get access to a variety of fresh
+          content from real-world experts.
+        </p>
 
-          <p className="text-light opacity-75 mb-4 proof1">
-            Future-proof your skills with Personal Plan. Get access to a variety
-            of fresh content from real-world experts.
-          </p>
+        <ul className="feature__list">
+          {features.map((feature) => (
+            <li key={feature}>
+              <i className="bi bi-check2-circle" aria-hidden="true" />
+              {feature}
+            </li>
+          ))}
+        </ul>
 
-          {/* FEATURES */}
-          <div className="row mb-4">
-            <div className="col-6 mb-2 aa">✅ Learn AI and more</div>
-            <div className="col-6 mb-2 aa">🎓 Prep for a certification</div>
-            <div className="col-6 mb-2 aa">🤖 Practice with AI coaching</div>
-            <div className="col-6 mb-2 aa">🚀 Advance your career</div>
-          </div>
-
-          {/* CTA */}
-          <button
-            className="btn btn-light fw-semibold px-4 py-2 mb-2"
-            style={{ fontSize: "13px" }}
-          >
-            Enroll Now
-          </button>
-
-          <div
-            className="text-light opacity-75 mt-2"
-            style={{ fontSize: "13px" }}
-          >
-            Deadline: <i>February 13, 2026</i>
-          </div>
-        </div>
-
-        {/* RIGHT CONTENT */}
-        <div className="col-md-6 d-flex justify-content-center mt-4 mt-md-0">
-          <img
-            src={bannerImg}
-            alt="AI Banner"
-            className="img-fluid"
-            style={{
-              maxHeight: "360px",
-              borderRadius: "20px",
-            }}
-          />
+        <div className="btn-row">
+          <Link className="btn btn-inverse" to="/course">
+            Enrol now <i className="bi bi-arrow-right" aria-hidden="true" />
+          </Link>
+          <Link className="btn btn-outline-inverse" to="/course">
+            Course details
+          </Link>
         </div>
       </div>
-    </div>
+
+      <div className="feature__card">
+        <div className="feature__card-logo">
+          <img src={PDPC} alt="Personal Data Protection Committee logo" loading="lazy" />
+          <div>
+            <p className="feature__card-title">Personal Data Protection Committee</p>
+            <p className="feature__card-sub">Course provider</p>
+          </div>
+        </div>
+
+        <dl className="feature__facts mb-0">
+          {[
+            ["Format", "8 course series"],
+            ["Duration", "5 weeks"],
+            ["Mode", "Online"],
+            ["Location", "Dar es Salaam"],
+          ].map(([label, value]) => (
+            <div className="feature__fact" key={label}>
+              <dt>{label}</dt>
+              <dd>{value}</dd>
+            </div>
+          ))}
+        </dl>
+
+        <p className="text-xs text-muted-ink mb-0 mt-3">
+          <i className="bi bi-clock" aria-hidden="true" /> Enrolment deadline: 13 February 2026
+        </p>
+      </div>
+    </section>
   );
 }
-
-export default HeroBanner;

@@ -1,195 +1,234 @@
 import { useEffect, useState } from "react";
-import "../../../dashboard.css";
-import "../../../app.css";
+import { Link, NavLink } from "react-router-dom";
+import Logo from "../../../components/Logo";
+import Dropdown, { MenuDivider, MenuItem } from "../../../components/Dropdown";
+
+const navItems = [
+  { to: "/provider/dashboard", label: "Overview", icon: "bi-speedometer2", end: true },
+  { to: "/provider/course", label: "Courses", icon: "bi-journal-text" },
+  { to: "/provider/cohorts", label: "Cohorts / intakes", icon: "bi-calendar-event" },
+  { to: "/provider/enrollments", label: "Enrolments", icon: "bi-people" },
+];
+
+const comingSoon = [
+  { label: "Invoices & receipts", icon: "bi-receipt" },
+  { label: "Profile", icon: "bi-person" },
+  { label: "Settings", icon: "bi-gear" },
+];
+
+const reportItems = [
+  { label: "Course reports", icon: "bi-file-earmark-text" },
+  { label: "Engagement", icon: "bi-graph-up" },
+];
+
+function initials(name = "") {
+  return (
+    name
+      .trim()
+      .split(/\s+/)
+      .slice(0, 2)
+      .map((part) => part.charAt(0))
+      .join("")
+      .toUpperCase() || "U"
+  );
+}
+
+function readStoredUser() {
+  try {
+    return JSON.parse(localStorage.getItem("user") || "null");
+  } catch {
+    return null;
+  }
+}
 
 export default function ProviderDashboardLayout({ title, children }) {
-  const [user, setUser] = useState(null);
+  const [user] = useState(readStoredUser);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // ✅ LOGOUT FUNCTION
-  const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    window.location.href = "/login";
-  };
-
-  // ✅ CHUKUA DATA KUTOKA LOCALSTORAGE (BILA KUTUMIA API ROUTE)
   useEffect(() => {
     const token = localStorage.getItem("token");
-    const savedUser = localStorage.getItem("user");
 
-    // Kama hana token au data ya user, mrudishe login moja kwa moja
-    if (!token || !savedUser) {
+    if (!token || !readStoredUser()) {
       window.location.href = "/login";
-      return;
-    }
-
-    try {
-      // Badilisha data kutoka string kwenda Object ya Javascript
-      const userData = JSON.parse(savedUser);
-      setUser(userData);
-    } catch (error) {
-      console.error("Imeshindwa kusoma data za user", error);
-      logout();
     }
   }, []);
 
+  useEffect(() => {
+    document.body.style.overflow = sidebarOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [sidebarOpen]);
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("role");
+    window.location.href = "/login";
+  };
+
+  const displayName = user?.name || user?.email || "Provider account";
+
   return (
-    <>
-      {/* TOP NAVBAR */}
-      <header
-        className="navbar sticky-top bg-white flex-md-nowrap p-0 shadow"
-        style={{ backgroundColor: "#111827" }}
+    <div className="app">
+      <aside
+        className={`app-sidebar${sidebarOpen ? " is-open" : ""}`}
+        id="provider-sidebar"
+        aria-label="Provider navigation"
       >
-        <a className="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="#">
-          TrainingHub
-        </a>
+        <Logo inverse subtitle="Provider workspace" to="/provider/dashboard" />
 
-        <button
-          className="navbar-toggler position-absolute d-md-none collapsed"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#sidebarMenu"
+        <nav
+          className="app-sidebar__section"
+          aria-label="Workspace"
+          onClick={(event) => {
+            if (event.target.closest("a")) setSidebarOpen(false);
+          }}
         >
-          <span className="navbar-toggler-icon"></span>
-        </button>
+          <p className="app-sidebar__label">Workspace</p>
+          <ul className="side-nav">
+            {navItems.map((item) => (
+              <li key={item.to}>
+                <NavLink
+                  to={item.to}
+                  end={item.end}
+                  className={({ isActive }) =>
+                    `side-nav__link${isActive ? " is-active" : ""}`
+                  }
+                >
+                  <i className={`bi ${item.icon}`} aria-hidden="true" />
+                  {item.label}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+        </nav>
 
-        <input
-          className="form-control form-control-dark w-100"
-          type="text"
-          placeholder="Search"
+        <nav className="app-sidebar__section" aria-label="Account">
+          <p className="app-sidebar__label">Account</p>
+          <ul className="side-nav">
+            {comingSoon.map((item) => (
+              <li key={item.label}>
+                <span className="side-nav__link is-disabled" aria-disabled="true">
+                  <i className={`bi ${item.icon}`} aria-hidden="true" />
+                  {item.label}
+                  <span className="side-nav__soon">Soon</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <nav className="app-sidebar__section" aria-label="Reports">
+          <p className="app-sidebar__label">Reports</p>
+          <ul className="side-nav">
+            {reportItems.map((item) => (
+              <li key={item.label}>
+                <span className="side-nav__link is-disabled" aria-disabled="true">
+                  <i className={`bi ${item.icon}`} aria-hidden="true" />
+                  {item.label}
+                  <span className="side-nav__soon">Soon</span>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <div className="app-sidebar__foot">
+          <Link to="/">
+            <i className="bi bi-box-arrow-up-right" aria-hidden="true" />
+            View public site
+          </Link>
+          <button type="button" onClick={logout}>
+            <i className="bi bi-box-arrow-right" aria-hidden="true" />
+            Log out
+          </button>
+        </div>
+      </aside>
+
+      {sidebarOpen ? (
+        <button
+          type="button"
+          className="app-overlay"
+          aria-label="Close navigation"
+          onClick={() => setSidebarOpen(false)}
         />
+      ) : null}
 
-        {/* USER INFO SECTION */}
-        <div className="navbar-nav">
-          <div className="nav-item d-flex align-items-center gap-3 px-3 text-white">
-            {/* Hapa ndipo jina lako linatokea kutoka kwenye LocalStorage */}
-            <span className="small text-white" style={{ color: "#111827" }}>
-              <i className="bi bi-person-circle me-1"></i>
-              {user ? user.name : "Mgeni"}
-            </span>
-
-            <button
-              type="button"
-              className="btn btn-sm btn-outline-light logoutButton d-flex align-items-center gap-1"
-              onClick={logout}
-            >
-              <i className="bi bi-box-arrow-right"></i>
-              Logout
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* MAIN CONTAINER */}
-      <div className="container-fluid">
-        <div className="row">
-          {/* SIDEBAR */}
-          <nav
-            id="sidebarMenu"
-            className="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse"
+      <div className="app-shell">
+        <header className="app-topbar">
+          <button
+            type="button"
+            className="nav-toggle app-topbar__menu"
+            onClick={() => setSidebarOpen(true)}
+            aria-controls="provider-sidebar"
+            aria-expanded={sidebarOpen}
+            aria-label="Open navigation"
           >
-            <div className="position-sticky pt-3">
-              <ul className="nav flex-column">
-                <li className="nav-item">
-                  <a
-                    className="nav-link d-flex gap-2"
-                    href="/provider/dashboard"
+            <i className="bi bi-list" aria-hidden="true" />
+          </button>
+
+          <h1 className="app-topbar__title">{title}</h1>
+          <span className="app-topbar__meta d-none d-lg-block">
+            TrainingHub provider workspace
+          </span>
+
+          <div className="app-topbar__actions">
+            <Link className="btn btn-ghost btn-sm d-none d-md-inline-flex" to="/provider/createCourse">
+              <i className="bi bi-plus-lg" aria-hidden="true" />
+              New course
+            </Link>
+
+            <Dropdown
+              label="Account menu"
+              trigger={({ open, toggle, id }) => (
+                <button
+                  type="button"
+                  className="user-button"
+                  onClick={toggle}
+                  data-menu-trigger
+                  aria-expanded={open}
+                  aria-controls={id}
+                  aria-haspopup="menu"
+                >
+                  <span className="avatar" aria-hidden="true">
+                    {initials(displayName)}
+                  </span>
+                  <span className="visually-hidden">Account menu for {displayName}</span>
+                  <span
+                    className="d-none d-xl-inline text-truncate app-topbar__user-name"
+                    aria-hidden="true"
                   >
-                    <i className="bi bi-speedometer2"></i>
-                    Overview
-                  </a>
-                </li>
+                    {displayName}
+                  </span>
+                  <i className="bi bi-chevron-down" aria-hidden="true" />
+                </button>
+              )}
+            >
+              {({ close }) => (
+                <>
+                  <div className="menu__header">
+                    <span className="menu__name">{displayName}</span>
+                    {user?.email ? <span className="menu__meta">{user.email}</span> : null}
+                  </div>
+                  <MenuItem icon="bi-speedometer2" to="/provider/dashboard" onClick={close}>
+                    Dashboard
+                  </MenuItem>
+                  <MenuItem icon="bi-house" to="/" onClick={close}>
+                    Public site
+                  </MenuItem>
+                  <MenuDivider />
+                  <MenuItem icon="bi-box-arrow-right" danger onClick={logout}>
+                    Log out
+                  </MenuItem>
+                </>
+              )}
+            </Dropdown>
+          </div>
+        </header>
 
-                <li className="nav-item">
-                  <a className="nav-link d-flex gap-2" href="/provider/course">
-                    <i className="bi bi-journal-text"></i>
-                    Courses
-                  </a>
-                </li>
-
-                <li className="nav-item">
-                  <a className="nav-link d-flex gap-2" href="/provider/cohorts">
-                    <i className="bi bi-calendar-event"></i>
-                    Cohorts / Intakes
-                  </a>
-                </li>
-
-                <li className="nav-item">
-                  <a
-                    className="nav-link d-flex gap-2"
-                    href="/tenant/enrollments"
-                  >
-                    <i className="bi bi-people"></i>
-                    Enrollments
-                  </a>
-                </li>
-
-                <li className="nav-item">
-                  <a
-                    className="nav-link d-flex gap-2"
-                    href="/tenant/enrollments"
-                  >
-                    <i className="bi bi-people"></i>
-                    Invoices & Receipts
-                  </a>
-                </li>
-
-                <li className="nav-item">
-                  <a className="nav-link d-flex gap-2" href="/tenant/profile">
-                    <i className="bi bi-person"></i>
-                    Profile
-                  </a>
-                </li>
-
-                <li className="nav-item">
-                  <a className="nav-link d-flex gap-2" href="/tenant/settings">
-                    <i className="bi bi-gear"></i>
-                    Settings
-                  </a>
-                </li>
-              </ul>
-
-              <hr />
-
-              <h6 className="sidebar-heading px-3 text-muted text-uppercase small">
-                Reports
-              </h6>
-
-              <ul className="nav flex-column mb-2">
-                <li className="nav-item">
-                  <a
-                    className="nav-link d-flex gap-2"
-                    href="/tenant/reports/courses"
-                  >
-                    <i className="bi bi-file-earmark-text"></i>
-                    Course Reports
-                  </a>
-                </li>
-
-                <li className="nav-item">
-                  <a
-                    className="nav-link d-flex gap-2"
-                    href="/tenant/reports/engagement"
-                  >
-                    <i className="bi bi-graph-up"></i>
-                    Engagement
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </nav>
-
-          {/* PAGE CONTENT */}
-          <main className="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-            <div className="pt-3 pb-2 mb-3 border-bottom">
-              <h1 className="h2 h2i">{title}</h1>
-            </div>
-
-            {/* Hapa ndipo page content yako inatokea */}
-            {children}
-          </main>
-        </div>
+        <main className="app-content">{children}</main>
       </div>
-    </>
+    </div>
   );
 }

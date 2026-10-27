@@ -1,18 +1,16 @@
-export default function CapacityBadge({ capacity, enrolled }) {
-  const percent = (enrolled / capacity) * 100;
+export default function CapacityBadge({ capacity = 0, enrolled = 0 }) {
+  const total = Number(capacity) || 0;
+  const taken = Number(enrolled) || 0;
+  const percent = total > 0 ? Math.min(100, Math.round((taken / total) * 100)) : 0;
 
-  let color = "green";
-  if (percent >= 100) color = "red";
-  else if (percent >= 70) color = "orange";
+  let tone = "success";
+  if (percent >= 100) tone = "danger";
+  else if (percent >= 70) tone = "warning";
 
   return (
-    <span style={{
-      background: color,
-      color: "white",
-      padding: "3px 8px",
-      borderRadius: 5
-    }}>
-      {enrolled}/{capacity} seats
+    <span className={`status-badge status-badge--${tone}`}>
+      <span className="status-badge__dot" aria-hidden="true" />
+      {taken}/{total} seats
     </span>
   );
 }

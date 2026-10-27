@@ -1,72 +1,64 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import ProviderDashboardLayout from "./layouts/ProviderDashboardLayout";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import DataTable from "react-data-table-component";
-import { FaEye, FaPlus, FaArrowLeft, FaSync } from "react-icons/fa";
-import { getCohorts, refreshCohortStatuses } from "../../api/courseServices";
+import { toast } from "react-toastify";
+import ProviderDashboardLayout from "./layouts/ProviderDashboardLayout";
+import Modal from "../../components/Modal";
+import dataTableStyles from "../../styles/dataTableStyles";
+import StatusBadge from "../../components/StatusBadge";
+import {
+  getCohorts,
+  refreshCohortStatuses,
+} from "../../api/courseServices";
 
 export default function CohortList() {
-  const { courseId } = useParams(); // Inakamata ID kutoka kwenye URL mfano: /cohortlist/4
+  const { courseId } = useParams();
   const navigate = useNavigate();
 
   const [cohorts, setCohorts] = useState([]);
-  const [courseName, setCourseName] = useState(""); // Kuhifadhi jina la kozi husika
+  const [courseName, setCourseName] = useState("");
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [filterText, setFilterText] = useState("");
-  const [showModal, setShowModal] = useState(false);
   const [selectedCohort, setSelectedCohort] = useState(null);
 
-  // Kuvuta data pindi tu page inapofunguka
   useEffect(() => {
     fetchCohorts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [courseId]);
 
   const fetchCohorts = async () => {
     try {
       setLoading(true);
-      console.log("Fetching cohorts for courseId:", courseId);
 
-      // Use the API service instead of direct api call
       const response = await getCohorts(courseId);
-      console.log("API Response:", response);
 
-      // Handle different response structures
       let cohortsData = [];
       if (response.data) {
-        // If response.data is an array, use it directly
         if (Array.isArray(response.data)) {
           cohortsData = response.data;
-        }
-        // If response.data has a data property (nested structure)
-        else if (response.data.data && Array.isArray(response.data.data)) {
+        } else if (Array.isArray(response.data.data)) {
           cohortsData = response.data.data;
-        }
-        // If response.data has cohorts property
-        else if (
-          response.data.cohorts &&
-          Array.isArray(response.data.cohorts)
-        ) {
+        } else if (Array.isArray(response.data.cohorts)) {
           cohortsData = response.data.cohorts;
         }
       }
 
-      console.log("Processed cohorts data:", cohortsData);
       setCohorts(cohortsData);
 
-      // Try to get course name from the first cohort or response
       if (cohortsData.length > 0) {
         setCourseName(
           cohortsData[0].course?.title ||
             cohortsData[0].course_name ||
-            `Course #${courseId}`,
+            `Course #${courseId}`
         );
       } else {
         setCourseName(`Course #${courseId}`);
       }
     } catch (error) {
       console.error("Error fetching cohorts:", error);
-      console.error("Error response:", error.response?.data);
-      setCohorts([]); // Ensure cohorts is empty on error
+      setCohorts([]);
+      toast.error("Unable to load cohorts for this course.");
     } finally {
       setLoading(false);
     }
@@ -75,111 +67,70 @@ export default function CohortList() {
   const filteredData = cohorts.filter((item) =>
     (item.intake_name || item.intakeName || "")
       .toLowerCase()
-      .includes(filterText.toLowerCase()),
+      .includes(filterText.toLowerCase())
   );
 
-  const handleView = (cohort) => {
-    setSelectedCohort(cohort);
-    setShowModal(true);
-  };
-
-  // Refresh cohort statuses
   const handleRefreshStatuses = async () => {
     try {
-      setLoading(true);
+      setRefreshing(true);
       await refreshCohortStatuses(courseId);
-      // Refresh the cohorts data
       await fetchCohorts();
-      alert("Cohort statuses updated successfully!");
+      toast.success("Cohort statuses updated.");
     } catch (error) {
       console.error("Error refreshing cohort statuses:", error);
-      alert("Failed to refresh cohort statuses. Please try again.");
+      toast.error("Failed to refresh cohort statuses. Please try again.");
     } finally {
-      setLoading(false);
+      setRefreshing(false);
     }
   };
 
-  // Calculate remaining seats
   const calculateRemainingSeats = (cohort) => {
     const enrolled = cohort.enrolled_students || cohort.enrolledStudents || 0;
     const capacity = cohort.capacity || 0;
     return Math.max(0, capacity - enrolled);
   };
 
-  // Get cohort status with automatic updates
   const getCohortStatus = (cohort) => {
     const now = new Date();
     const deadline = new Date(
-      cohort.registration_deadline || cohort.registrationDeadline,
+      cohort.registration_deadline || cohort.registrationDeadline
     );
     const endDate = new Date(cohort.end_date || cohort.endDate);
     const enrolled = cohort.enrolled_students || cohort.enrolledStudents || 0;
     const capacity = cohort.capacity || 0;
 
-    // If end date has passed, mark as ended
-    if (now > endDate) {
-      return "ENDED";
-    }
-
-    // If enrollment deadline has passed, mark as closed
-    if (now > deadline) {
-      return "CLOSED";
-    }
-
-    // If at full capacity, mark as full
-    if (enrolled >= capacity) {
-      return "FULL";
-    }
-
-    // Otherwise, use the stored status or default to open
+    if (now > endDate) return "ENDED";
+    if (now > deadline) return "CLOSED";
+    if (enrolled >= capacity) return "FULL";
     return cohort.status || "OPEN";
-  };
-
-  // Get status badge styling
-  const getStatusBadge = (status) => {
-    switch (status.toUpperCase()) {
-      case "OPEN":
-        return "bg-success";
-      case "CLOSED":
-        return "bg-secondary";
-      case "FULL":
-        return "bg-warning text-dark";
-      case "ENDED":
-        return "bg-dark";
-      default:
-        return "bg-danger";
-    }
   };
 
   const columns = [
     { name: "ID", selector: (row) => row.id, width: "70px", sortable: true },
     {
-      name: "Intake Name",
+      name: "Intake name",
       selector: (row) => row.intake_name || row.intakeName,
       sortable: true,
+      wrap: true,
     },
     {
-      name: "Start Date",
+      name: "Start date",
       selector: (row) => row.start_date || row.startDate,
       sortable: true,
     },
     {
-      name: "End Date",
+      name: "End date",
       selector: (row) => row.end_date || row.endDate,
       sortable: true,
     },
-    {
-      name: "Capacity",
-      selector: (row) => row.capacity,
-      sortable: true,
-    },
+    { name: "Capacity", selector: (row) => row.capacity, sortable: true },
     {
       name: "Enrolled",
       selector: (row) => row.enrolled_students || row.enrolledStudents || 0,
       sortable: true,
     },
     {
-      name: "Remaining Seats",
+      name: "Remaining seats",
       selector: (row) => calculateRemainingSeats(row),
       sortable: true,
       cell: (row) => {
@@ -189,16 +140,27 @@ export default function CohortList() {
           capacity > 0 ? ((capacity - remaining) / capacity) * 100 : 0;
 
         return (
-          <div>
-            <span className={remaining === 0 ? "text-danger fw-bold" : ""}>
+          <div className="d-flex flex-column gap-1">
+            <span className={remaining === 0 ? "text-danger fw-semibold" : ""}>
               {remaining}
             </span>
             <div
-              className="progress mt-1"
-              style={{ height: "4px", width: "60px" }}
+              className="progress"
+              style={{ height: "4px", width: "66px" }}
+              role="progressbar"
+              aria-valuenow={Math.round(percentage)}
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-label={`${Math.round(percentage)}% of seats filled`}
             >
               <div
-                className={`progress-bar ${percentage >= 100 ? "bg-danger" : percentage >= 80 ? "bg-warning" : "bg-success"}`}
+                className={`progress-bar ${
+                  percentage >= 100
+                    ? "bg-danger"
+                    : percentage >= 80
+                      ? "bg-warning"
+                      : "bg-success"
+                }`}
                 style={{ width: `${Math.min(percentage, 100)}%` }}
               />
             </div>
@@ -215,202 +177,237 @@ export default function CohortList() {
       name: "Status",
       selector: (row) => getCohortStatus(row),
       sortable: true,
-      cell: (row) => {
-        const status = getCohortStatus(row);
-        return (
-          <span className={`badge ${getStatusBadge(status)}`}>{status}</span>
-        );
-      },
+      cell: (row) => <StatusBadge status={getCohortStatus(row)} />,
     },
     {
       name: "Actions",
+      right: true,
       cell: (row) => (
-        <button className="btn btn-sm btn-info" onClick={() => handleView(row)}>
-          <FaEye color="white" />
+        <button
+          type="button"
+          className="btn btn-ghost btn-icon btn-sm"
+          onClick={() => setSelectedCohort(row)}
+          aria-label={`View cohort ${
+            row.intake_name || row.intakeName || row.id
+          }`}
+        >
+          <i className="bi bi-eye" aria-hidden="true" />
         </button>
       ),
     },
   ];
 
   return (
-    <ProviderDashboardLayout title="Course Cohorts">
-      <div className="container mt-4">
-        {/* Header Section */}
-        <div className="d-flex justify-content-between align-items-center mb-4">
-          <div>
-            <button
-              className="btn btn-sm btn-outline-secondary mb-2"
-              onClick={() => navigate(-1)}
-            >
-              <FaArrowLeft /> Back
-            </button>
-            <h5 className="mb-0">
-              Cohorts for:{" "}
-              <span className="text-primary">
-                {courseName || `Course #${courseId}`}
-              </span>
-            </h5>
-          </div>
-
-          <div className="d-flex gap-2">
-            <input
-              type="text"
-              placeholder="Search intake..."
-              className="form-control w-auto"
-              value={filterText}
-              onChange={(e) => setFilterText(e.target.value)}
-            />
-            <button
-              className="btn btn-sm btn-outline-primary d-flex align-items-center gap-1"
-              onClick={handleRefreshStatuses}
-              disabled={loading}
-              title="Refresh cohort statuses"
-            >
-              <FaSync className={loading ? "spinning" : ""} />
-              Refresh Status
-            </button>
-            <button
-              className="btn btn-sm btn-success d-flex align-items-center gap-1"
-              onClick={() => navigate(`/provider/cohorts/create/${courseId}`)}
-            >
-              <FaPlus /> Add Cohort
-            </button>
-          </div>
-        </div>
-
-        {/* Table Section */}
-        <div className="card shadow-sm">
-          <DataTable
-            columns={columns}
-            data={filteredData}
-            pagination
-            highlightOnHover
-            striped
-            progressPending={loading}
-            noDataComponent={
-              <div className="p-5">
-                No cohorts found for this specific course.
-              </div>
-            }
-          />
-        </div>
-
-        {/* VIEW COHORT MODAL */}
-        {showModal && selectedCohort && (
-          <div
-            className="modal fade show d-block"
-            style={{ background: "#00000080" }}
+    <ProviderDashboardLayout title="Course cohorts">
+      <div className="page-header">
+        <div>
+          <button
+            type="button"
+            className="btn btn-ghost btn-sm mb-2 px-2"
+            onClick={() => navigate(-1)}
           >
-            <div className="modal-dialog modal-lg modal-dialog-centered">
-              <div className="modal-content border-0 shadow">
-                <div className="modal-header bg-primary text-white">
-                  <h5 className="modal-title">
-                    {selectedCohort.intake_name || selectedCohort.intakeName}
-                  </h5>
-                  <button
-                    className="btn-close btn-close-white"
-                    onClick={() => setShowModal(false)}
-                  />
-                </div>
-                <div className="modal-body p-4">
-                  <div className="row g-3">
-                    <div className="col-md-6 border-end">
-                      <p>
-                        <strong>Start Date:</strong>{" "}
-                        {selectedCohort.start_date || selectedCohort.startDate}
-                      </p>
-                      <p>
-                        <strong>End Date:</strong>{" "}
-                        {selectedCohort.end_date || selectedCohort.endDate}
-                      </p>
-                      <p>
-                        <strong>Registration Deadline:</strong>{" "}
-                        {selectedCohort.registration_deadline ||
-                          selectedCohort.registrationDeadline}
-                      </p>
-                      <p>
-                        <strong>Price:</strong> TZS{" "}
-                        {(selectedCohort.price || 0).toLocaleString()}
-                      </p>
-                      <p>
-                        <strong>Status:</strong>{" "}
-                        <span
-                          className={`badge ${getStatusBadge(getCohortStatus(selectedCohort))}`}
-                        >
-                          {getCohortStatus(selectedCohort)}
-                        </span>
-                      </p>
-                    </div>
-                    <div className="col-md-6">
-                      <p>
-                        <strong>Capacity:</strong> {selectedCohort.capacity}{" "}
-                        Students
-                      </p>
-                      <p>
-                        <strong>Enrolled Students:</strong>{" "}
-                        {selectedCohort.enrolled_students ||
-                          selectedCohort.enrolledStudents ||
-                          0}
-                      </p>
-                      <p>
-                        <strong>Remaining Seats:</strong>{" "}
-                        <span
-                          className={
-                            calculateRemainingSeats(selectedCohort) === 0
-                              ? "text-danger fw-bold"
-                              : "text-success fw-bold"
-                          }
-                        >
-                          {calculateRemainingSeats(selectedCohort)}
-                        </span>
-                      </p>
-                      <p>
-                        <strong>Schedule:</strong>{" "}
-                        {selectedCohort.schedule_text ||
-                          selectedCohort.schedule}
-                      </p>
-                      <p>
-                        <strong>Venue/Link:</strong>{" "}
-                        {selectedCohort.venue ||
-                          selectedCohort.online_link ||
-                          selectedCohort.onlineLink ||
-                          "N/A"}
-                      </p>
-                    </div>
-                  </div>
-                  <hr />
-                  <h6>Description</h6>
-                  <p className="text-muted">
-                    {selectedCohort.description || "No description provided."}
-                  </p>
-                </div>
-                <div className="modal-footer bg-light">
-                  <button
-                    className="btn btn-secondary"
-                    onClick={() => setShowModal(false)}
-                  >
-                    Close
-                  </button>
-                </div>
-              </div>
-            </div>
+            <i className="bi bi-arrow-left" aria-hidden="true" /> Back
+          </button>
+          <h2 className="h4 mb-1">
+            Cohorts for{" "}
+            <span className="text-primary">
+              {courseName || `Course #${courseId}`}
+            </span>
+          </h2>
+          <p className="page-header__lead">
+            Open intakes, monitor remaining seats and refresh statuses.
+          </p>
+        </div>
+
+        <div className="page-header__actions">
+          <button
+            type="button"
+            className="btn btn-secondary-ink"
+            onClick={handleRefreshStatuses}
+            disabled={refreshing}
+          >
+            <i
+              className={`bi bi-arrow-clockwise${refreshing ? " spinning" : ""}`}
+              aria-hidden="true"
+            />
+            Refresh status
+          </button>
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => navigate(`/provider/cohorts/create/${courseId}`)}
+          >
+            <i className="bi bi-plus-lg" aria-hidden="true" />
+            Add cohort
+          </button>
+        </div>
+      </div>
+
+      <div className="table-panel">
+        <div className="table-toolbar">
+          <div className="table-toolbar__search">
+            <i className="bi bi-search" aria-hidden="true" />
+            <label className="visually-hidden" htmlFor="cohort-search">
+              Search intakes
+            </label>
+            <input
+              id="cohort-search"
+              type="search"
+              className="form-control"
+              placeholder="Search intake name"
+              value={filterText}
+              onChange={(event) => setFilterText(event.target.value)}
+            />
+          </div>
+          <span className="text-xs text-muted-ink ms-auto">
+            {filteredData.length} of {cohorts.length} intakes
+          </span>
+        </div>
+
+        {!loading && filteredData.length === 0 ? (
+          <div className="empty-state border-0 bg-transparent">
+            <span className="empty-state__icon" aria-hidden="true">
+              <i className={`bi ${cohorts.length === 0 ? "bi-calendar-plus" : "bi-search"}`} />
+            </span>
+            <h3 className="empty-state__title">
+              {cohorts.length === 0 ? "No cohorts yet" : "No intakes match your search"}
+            </h3>
+            <p className="empty-state__text">
+              {cohorts.length === 0
+                ? "Add an intake so learners can enrol in this course."
+                : `Nothing matches “${filterText}”. Try a different intake name.`}
+            </p>
+            {cohorts.length === 0 ? (
+              <button
+                type="button"
+                className="btn btn-primary btn-sm empty-state__action"
+                onClick={() => navigate(`/provider/cohorts/create/${courseId}`)}
+              >
+                Add cohort
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="btn btn-secondary-ink btn-sm empty-state__action"
+                onClick={() => setFilterText("")}
+              >
+                Clear search
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="table-scroll" tabIndex={0}>
+            <DataTable
+              columns={columns}
+              data={filteredData}
+              pagination
+              highlightOnHover
+              customStyles={dataTableStyles}
+              progressPending={loading}
+            />
           </div>
         )}
       </div>
 
-      <style jsx>{`
-        .spinning {
-          animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-          from {
-            transform: rotate(0deg);
-          }
-          to {
-            transform: rotate(360deg);
-          }
-        }
-      `}</style>
+      {selectedCohort ? (
+        <Modal
+          onClose={() => setSelectedCohort(null)}
+          labelledBy="cohort-modal-title"
+          size="md"
+        >
+          <div className="modal-header">
+            <h2 className="modal-title" id="cohort-modal-title">
+              {selectedCohort.intake_name || selectedCohort.intakeName}
+            </h2>
+            <button
+              type="button"
+              className="btn-close"
+              aria-label="Close cohort details"
+              onClick={() => setSelectedCohort(null)}
+            />
+          </div>
+
+          <div className="modal-body">
+            <div className="row g-4">
+              <div className="col-md-6">
+                <p className="mb-2">
+                  <strong>Start date:</strong>{" "}
+                  {selectedCohort.start_date || selectedCohort.startDate}
+                </p>
+                <p className="mb-2">
+                  <strong>End date:</strong>{" "}
+                  {selectedCohort.end_date || selectedCohort.endDate}
+                </p>
+                <p className="mb-2">
+                  <strong>Registration deadline:</strong>{" "}
+                  {selectedCohort.registration_deadline ||
+                    selectedCohort.registrationDeadline}
+                </p>
+                <p className="mb-2">
+                  <strong>Price:</strong> TZS{" "}
+                  {(selectedCohort.price || 0).toLocaleString()}
+                </p>
+                <p className="mb-0 d-flex align-items-center gap-2">
+                  <strong>Status:</strong>
+                  <StatusBadge status={getCohortStatus(selectedCohort)} />
+                </p>
+              </div>
+
+              <div className="col-md-6">
+                <p className="mb-2">
+                  <strong>Capacity:</strong> {selectedCohort.capacity} students
+                </p>
+                <p className="mb-2">
+                  <strong>Enrolled students:</strong>{" "}
+                  {selectedCohort.enrolled_students ||
+                    selectedCohort.enrolledStudents ||
+                    0}
+                </p>
+                <p className="mb-2">
+                  <strong>Remaining seats:</strong>{" "}
+                  <span
+                    className={
+                      calculateRemainingSeats(selectedCohort) === 0
+                        ? "text-danger fw-semibold"
+                        : "text-success fw-semibold"
+                    }
+                  >
+                    {calculateRemainingSeats(selectedCohort)}
+                  </span>
+                </p>
+                <p className="mb-2">
+                  <strong>Schedule:</strong>{" "}
+                  {selectedCohort.schedule_text || selectedCohort.schedule}
+                </p>
+                <p className="mb-0">
+                  <strong>Venue / link:</strong>{" "}
+                  {selectedCohort.venue ||
+                    selectedCohort.online_link ||
+                    selectedCohort.onlineLink ||
+                    "N/A"}
+                </p>
+              </div>
+            </div>
+
+            <hr />
+
+            <h3 className="h6">Description</h3>
+            <p className="text-secondary-ink mb-0">
+              {selectedCohort.description || "No description provided."}
+            </p>
+          </div>
+
+          <div className="modal-footer">
+            <button
+              type="button"
+              className="btn btn-secondary-ink"
+              onClick={() => setSelectedCohort(null)}
+            >
+              Close
+            </button>
+          </div>
+        </Modal>
+      ) : null}
     </ProviderDashboardLayout>
   );
 }
