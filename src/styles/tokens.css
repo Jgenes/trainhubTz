@@ -1,11 +1,11 @@
 /* ==========================================================================
-   TrainingHub design tokens
+   TrainHub TZ design tokens
    Single source of truth for colour, type, spacing, radius, elevation.
    Imported once (main.jsx) before every other stylesheet.
    ========================================================================== */
 
 :root {
-  /* ---- Brand ramp (built around the existing TrainingHub navy #0a2e67) -- */
+  /* ---- Brand ramp (navy of the TrainHub TZ wordmark, deepened for text) - */
   --brand-50: #eff5fd;
   --brand-100: #dbe8fa;
   --brand-200: #bcd4f4;
@@ -18,17 +18,19 @@
   --brand-900: #08224d;
   --brand-950: #05162f;
 
-  /* ---- Accent (used sparingly: success, accreditation, highlights) ------ */
-  --accent-50: #e8f7f4;
-  --accent-100: #c7ece5;
-  --accent-500: #0f9487;
-  --accent-600: #0b7a70;
-  --accent-700: #0a645c;
+  /* ---- Accent (the green of the TrainHub TZ wordmark) ------------------ */
+  --accent-50: #ecf7ef;
+  --accent-100: #d1ecda;
+  --accent-200: #a9dab7;
+  --accent-500: #388951;
+  --accent-600: #2f7344;
+  --accent-700: #265c37;
 
-  /* ---- Rating / attention ---------------------------------------------- */
-  --amber-100: #fdf3d8;
-  --amber-400: #f0b429;
-  --amber-600: #b45309;
+  /* ---- Sun (the orange of the TrainHub TZ globe) ----------------------- */
+  --amber-100: #fff2dc;
+  --amber-200: #ffdfae;
+  --amber-400: #f6a723;
+  --amber-600: #b3540a;
 
   /* ---- Neutrals -------------------------------------------------------- */
   --ink-900: #0d1626;

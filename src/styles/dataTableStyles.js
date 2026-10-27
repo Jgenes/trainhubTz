@@ -1,6 +1,6 @@
 /**
  * Shared react-data-table-component styling so every provider table matches
- * the TrainingHub design system.
+ * the TrainHub TZ design system.
  */
 const dataTableStyles = {
   tableWrapper: {

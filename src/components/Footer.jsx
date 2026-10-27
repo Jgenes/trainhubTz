@@ -5,7 +5,7 @@ import { isAuthenticated } from "../utils/auth";
 
 const columns = [
   {
-    title: "TrainingHub",
+    title: "TrainHub TZ",
     links: [
       { label: "Browse trainings", to: "/trainings" },
       { label: "My learning", to: "/learning", authOnly: true },
@@ -74,9 +74,10 @@ export default function Footer() {
       <div className="container">
         <div className="footer-grid">
           <div className="footer-brand">
-            <Logo inverse subtitle="Training marketplace" />
+            <Logo inverse />
+            <p className="footer-tagline">Elevating skills. Transforming Tanzania.</p>
             <p className="footer-blurb">
-              TrainingHub connects learners across Tanzania with accredited courses and
+              TrainHub TZ connects learners across Tanzania with accredited courses and
               upcoming intakes from universities, colleges and professional training
               providers.
             </p>
@@ -128,7 +129,7 @@ export default function Footer() {
         </div>
 
         <div className="footer-bottom">
-          <span>© {new Date().getFullYear()} TrainingHub. All rights reserved.</span>
+          <span>© {new Date().getFullYear()} TrainHub TZ. All rights reserved.</span>
           <div className="footer-bottom__links">
             {legalLinks.map((item) => (
               <a key={item.label} className="footer-link" href={item.href}>

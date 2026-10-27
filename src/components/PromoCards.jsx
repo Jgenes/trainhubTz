@@ -32,7 +32,7 @@ export default function PromoCards() {
 
         <div>
           <p className="promo-card__brand">
-            <strong>TrainingHub</strong> <span>for teams</span>
+            <strong>TrainHub TZ</strong> <span>for teams</span>
           </p>
           <h2 className="promo-card__title" id="promo-teams">
             Train your team in top skills and join 3,700+ teams worldwide

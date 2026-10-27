@@ -76,7 +76,7 @@ export default function ProviderDashboardLayout({ title, children }) {
         id="provider-sidebar"
         aria-label="Provider navigation"
       >
-        <Logo inverse subtitle="Provider workspace" to="/provider/dashboard" />
+        <Logo inverse to="/provider/dashboard" size="sm" />
 
         <nav
           className="app-sidebar__section"
@@ -170,7 +170,7 @@ export default function ProviderDashboardLayout({ title, children }) {
 
           <h1 className="app-topbar__title">{title}</h1>
           <span className="app-topbar__meta d-none d-lg-block">
-            TrainingHub provider workspace
+            TrainHub TZ provider workspace
           </span>
 
           <div className="app-topbar__actions">

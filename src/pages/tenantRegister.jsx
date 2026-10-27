@@ -78,7 +78,7 @@ function RegisterTenant() {
       points={[
         "Create courses and recurring cohorts",
         "Track seats, pricing and enrolment status",
-        "Get discovered by learners on TrainingHub",
+        "Get discovered by learners on TrainHub TZ",
       ]}
       footer={
         <>

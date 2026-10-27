@@ -33,8 +33,8 @@ Deleted stylesheets (all superseded, none imported any more):
 
 | File | Change |
 |---|---|
-| `index.html` | **REWRITTEN** — `lang="en"`, description/OG/theme-color meta, `/favicon.svg`, removed unused CDN links |
-| `public/favicon.svg` | **NEW** — brand mark, also used by `Logo` |
+| `index.html` | **REWRITTEN** — `lang="en"`, description/OG/theme-color/`og:image` meta, PNG favicon + apple-touch-icon, removed unused CDN links, TrainHub TZ titles |
+| `public/favicon.png` · `public/apple-touch-icon.png` · `public/og-image.png` | **NEW** — derived from the supplied TrainHub TZ logo (see `04-brand-and-logo.md`) |
 | `public/vite.svg` | **DELETED** |
 | `src/main.jsx` | **REWRITTEN** — imports tokens → base → components → pages, mounts `App` + `ToastContainer`; old six-stylesheet imports removed |
 | `src/App.jsx` | **REWRITTEN** — eager public pages, `React.lazy` + `Suspense` for 8 provider pages, `WorkspaceFallback`, per-route `document.title` + scroll-to-top, `/learning` and `/courseLearning` wrapped in `RequireAuth`, 21 routes + catch-all → 404 |
@@ -46,7 +46,7 @@ Deleted stylesheets (all superseded, none imported any more):
 
 ### New
 
-`Logo.jsx` (brand lockup, inverse variant) · `NavBar.jsx` ¹ · `Footer.jsx` ¹ ·
+`Logo.jsx` (supplied TrainHub TZ artwork, `inverse` + `size` variants) · `NavBar.jsx` ¹ · `Footer.jsx` ¹ ·
 `Dropdown.jsx` (keyboard-accessible menu primitive) · `Modal.jsx` (dialog shell) ·
 `ConfirmDialog.jsx` (replaces `window.confirm`) · `RequireAuth.jsx` (learner route guard) ·
 `CourseCard.jsx` (one card for every listing) · `PartnerStrip.jsx` · `HeroBanner.jsx` ·

@@ -66,7 +66,7 @@ function RouteMeta() {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    document.title = `${getPageTitle(pathname)} · TrainingHub`;
+    document.title = `${getPageTitle(pathname)} · TrainHub TZ`;
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }, [pathname]);
 

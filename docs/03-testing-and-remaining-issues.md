@@ -76,6 +76,8 @@ LAYOUT 66 checks, 0 problems
 Result per route: **no horizontal overflow at any width, a unique page title on every
 route, and one `<h1>` per page** (previous markup had none on several pages).
 
+Route titles now end with `· TrainHub TZ` (brand identity change — see `04-brand-and-logo.md`).
+
 Routes covered: `/`, `/trainings`, `/course`, `/learning`, `/courseLearning`, `/login`,
 `/register`, `/tenant-register`, `/otp-verification`, `/tenant/onboarding`,
 `/provider/verification`, `/checkout`, `/provider/dashboard`, `/provider/course`,
@@ -176,6 +178,8 @@ a screen reader (NVDA/VoiceOver) and at 200–400 % zoom is still recommended.
 - **Split the 449 kB stylesheet** — Bootstrap + Bootstrap Icons + design system are loaded
   together. Targeting only the used Bootstrap modules, or self-hosting a subset icon font,
   would cut ~40 % of the CSS.
+- **Logo artwork is a 346 px PNG** — perfectly sharp at the 38–44 px heights used, but if a vector
+  (SVG/AI) master exists it should replace `src/assets/trainhub-logo*.png` for print/3× displays.
 - **Remote imagery** — course cards on `/learning`, `/trainings` and the home page point at
   Unsplash/ui-avatars URLs. In an offline or rate-limited environment they fall back to the
   designed placeholder tile, but bundling local assets would remove the external dependency

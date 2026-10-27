@@ -29,7 +29,7 @@ export default function PartnerStrip() {
           Learn from leading universities &amp; organizations
         </h2>
         <span className="partners__note">
-          Accredited institutions and regulators training with TrainingHub
+          Accredited institutions and regulators training with TrainHub TZ
         </span>
       </div>
 

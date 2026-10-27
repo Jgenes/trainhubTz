@@ -119,7 +119,7 @@ export default function Home() {
             <div className="section-head">
               <div>
                 <h2 className="section-head__title" id="value-title">
-                  Why learners choose TrainingHub
+                  Why learners choose TrainHub TZ
                 </h2>
                 <p className="section-head__sub">
                   One place to find, compare and enrol in professional training across
@@ -193,7 +193,7 @@ export default function Home() {
         </section>
 
         {/* Promo */}
-        <section className="section" aria-label="TrainingHub for teams and individuals">
+        <section className="section" aria-label="TrainHub TZ for teams and individuals">
           <div className="container">
             <PromoCards />
           </div>

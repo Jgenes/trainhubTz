@@ -1,19 +1,24 @@
 import { Link } from "react-router-dom";
-
-const MARK_SRC = "/favicon.svg";
+import logoOnLight from "../assets/trainhub-logo.png";
+import logoOnDark from "../assets/trainhub-logo-inverse.png";
 
 /**
- * TrainingHub brand lockup.
- * `inverse` renders the wordmark in white for dark surfaces.
+ * TrainHub TZ brand lockup (globe + wordmark).
+ *
+ * `inverse` switches to the white-wordmark artwork used on the navy footer
+ * and provider sidebar. The lockup already contains the wordmark, so the
+ * image carries the accessible name and no duplicate text is rendered.
  */
-export default function Logo({ inverse = false, subtitle = "Training marketplace", to = "/" }) {
+export default function Logo({ inverse = false, to = "/", size = "md" }) {
   return (
-    <Link className="brand" to={to} style={inverse ? { color: "#fff" } : undefined}>
-      <img className="brand__mark" src={MARK_SRC} alt="" width="32" height="32" />
-      <span className="brand__name">
-        TrainingHub
-        {subtitle ? <small>{subtitle}</small> : null}
-      </span>
+    <Link className={`brand brand--${size}`} to={to} aria-label="TrainHub TZ — home">
+      <img
+        className="brand__logo"
+        src={inverse ? logoOnDark : logoOnLight}
+        alt="TrainHub TZ"
+        width="346"
+        height="62"
+      />
     </Link>
   );
 }

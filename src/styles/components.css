@@ -1176,36 +1176,26 @@ button.lesson:hover {
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 0.6rem;
-  font-size: 1.0625rem;
-  font-weight: var(--weight-bold);
-  letter-spacing: -0.02em;
-  color: var(--brand-900);
   flex: 0 0 auto;
 }
 
 .brand:hover {
-  color: var(--brand-800);
   text-decoration: none;
 }
 
-.brand__mark {
-  width: 2rem;
-  height: 2rem;
-  flex: 0 0 auto;
-  border-radius: 8px;
+.brand__logo {
   display: block;
+  width: auto;
+  height: 2.375rem;
+  max-width: 100%;
 }
 
-.brand__name small {
-  display: block;
-  font-size: 0.6875rem;
-  font-weight: var(--weight-semibold);
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  line-height: 1;
-  margin-top: 0.2rem;
+.brand--sm .brand__logo {
+  height: 2rem;
+}
+
+.brand--lg .brand__logo {
+  height: 2.75rem;
 }
 
 .site-nav {
@@ -1577,12 +1567,8 @@ button.lesson:hover {
   gap: var(--space-8) var(--space-6);
 }
 
-.footer-brand .brand {
-  color: #ffffff;
-}
-
-.footer-brand .brand__name small {
-  color: var(--text-inverse-muted);
+.footer-brand .brand__logo {
+  height: 2.75rem;
 }
 
 .footer-blurb {
@@ -1832,14 +1818,12 @@ button.lesson:hover {
   transform: translateX(0);
 }
 
-.app-sidebar .brand,
-.app-sidebar .brand:hover {
-  color: #ffffff;
+.app-sidebar .brand {
   padding: 0.25rem;
 }
 
-.app-sidebar .brand__name small {
-  color: var(--text-inverse-muted);
+.app-sidebar .brand__logo {
+  height: 2.25rem;
 }
 
 .app-sidebar__section {
@@ -2385,4 +2369,12 @@ button.lesson:hover {
 .table-scroll:focus-visible {
   outline: 2px solid var(--brand-500);
   outline-offset: 2px;
+}
+
+.footer-tagline {
+  margin: var(--space-3) 0 0;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--accent-100);
+  letter-spacing: 0.01em;
 }

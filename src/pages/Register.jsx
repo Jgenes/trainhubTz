@@ -69,7 +69,7 @@ function Register() {
       title="Create an account"
       lead="Create your account and start your learning journey."
       asideTitle="Start learning with Tanzania's training marketplace."
-      asideText="One account gives you access to every provider on TrainingHub."
+      asideText="One account gives you access to every provider on TrainHub TZ."
       footer={
         <>
           Already have an account? <Link to="/login">Log in</Link>

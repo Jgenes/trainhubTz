@@ -32,7 +32,7 @@ export default function AuthLayout({
         <div className="auth">
           <aside className="auth__aside" aria-hidden="true">
             <div>
-              <p className="eyebrow eyebrow--inverse">TrainingHub</p>
+              <p className="eyebrow eyebrow--inverse">TrainHub TZ</p>
               <h2 className="auth__aside-title">{asideTitle}</h2>
               <p className="auth__aside-text">{asideText}</p>
 
@@ -47,7 +47,7 @@ export default function AuthLayout({
             </div>
 
             <p className="auth__aside-footer mb-0">
-              © {new Date().getFullYear()} TrainingHub · Dar es Salaam, Tanzania
+              © {new Date().getFullYear()} TrainHub TZ · Dar es Salaam, Tanzania
             </p>
           </aside>
 
