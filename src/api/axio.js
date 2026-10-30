@@ -1,7 +1,8 @@
 import axios from "axios";
+import { API_BASE_URL } from "./config";
 
 const api = axios.create({
-  baseURL: "http://localhost:8000/api",
+  baseURL: API_BASE_URL,
   // 🔑 Tumeondoa withCredentials kwa sababu tunatumia Bearer Token, sio Cookies
   headers: {
     "Content-Type": "application/json",
