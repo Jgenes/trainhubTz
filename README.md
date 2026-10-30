@@ -1,3 +1,28 @@
+# TrainingHub TZ — frontend
+
+## API configuration
+
+The app talks to the live Laravel API at **`https://api.traininghubtz.co.tz/api`**
+and loads uploaded files from `https://api.traininghubtz.co.tz/storage`.
+
+The base URL is defined in `src/api/config.js` and can be overridden per
+environment with Vite env vars (copy `.env.example` to `.env.local`):
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `VITE_API_BASE_URL` | `https://api.traininghubtz.co.tz/api` | Axios `baseURL` for every API call |
+| `VITE_STORAGE_BASE_URL` | `<API origin>/storage` | Prefix for course banners / uploaded files |
+| `VITE_API_PROXY_TARGET` | `https://api.traininghubtz.co.tz` | Dev-server proxy target for relative `/api` requests |
+
+## Getting started
+
+```bash
+npm install
+npm run dev
+```
+
+---
+
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.

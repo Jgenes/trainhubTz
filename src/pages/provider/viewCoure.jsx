@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import api from "../../api/axio";
+import { storageUrl } from "../../api/config";
 import ProviderDashboardLayout from "./layouts/ProviderDashboardLayout";
 import StatusBadge from "../../components/StatusBadge";
 
@@ -56,9 +57,7 @@ export default function ViewCourse() {
   }
 
   const isOnline = course.mode?.toLowerCase() === "online";
-  const bannerUrl = course.banner
-    ? `http://localhost:8000/storage/${course.banner}`
-    : null;
+  const bannerUrl = storageUrl(course.banner);
 
   return (
     <ProviderDashboardLayout title="Course details">
