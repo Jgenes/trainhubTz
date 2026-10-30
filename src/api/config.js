@@ -1,22 +1,33 @@
+/* global __API_BASE_URL__, __STORAGE_BASE_URL__ */
 // Central API configuration.
-// Override with Vite env vars (see .env.example) without touching source code.
-const DEFAULT_API_BASE_URL = "https://api.traininghubtz.co.tz/api";
+//
+// Production builds get their values injected by vite.config.js, which
+// guarantees the bundle never points at localhost or an ephemeral tunnel
+// (ngrok / cloudflared / localtunnel) even if such an env var is left over in
+// the shell, a .env file or a hosting dashboard.
+//
+// `npm run dev` still honours VITE_API_BASE_URL / VITE_API_URL from .env.local.
+const FALLBACK_API_BASE_URL = "https://api.traininghubtz.co.tz/api";
 
-const trimTrailingSlashes = (value) => value.replace(/\/+$/, "");
+const injectedApiBaseUrl =
+  typeof __API_BASE_URL__ === "string" ? __API_BASE_URL__ : "";
 
-const env = import.meta.env ?? {};
+const devApiBaseUrl = import.meta.env.DEV
+  ? (import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || "").trim()
+  : "";
 
-export const API_BASE_URL = trimTrailingSlashes(
-  (env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL).trim(),
-);
+export const API_BASE_URL =
+  injectedApiBaseUrl || devApiBaseUrl || FALLBACK_API_BASE_URL;
 
 // The API lives under /api; uploaded files are served from the same origin
 // under /storage (Laravel `php artisan storage:link`).
 export const API_ORIGIN = API_BASE_URL.replace(/\/api$/i, "");
 
-export const STORAGE_BASE_URL = trimTrailingSlashes(
-  (env.VITE_STORAGE_BASE_URL || `${API_ORIGIN}/storage`).trim(),
-);
+const injectedStorageBaseUrl =
+  typeof __STORAGE_BASE_URL__ === "string" ? __STORAGE_BASE_URL__ : "";
+
+export const STORAGE_BASE_URL =
+  injectedStorageBaseUrl || `${API_ORIGIN}/storage`;
 
 /**
  * Turn a stored file path (e.g. "banners/course.jpg") into a full URL.
